@@ -46,19 +46,58 @@ public List<Integer> getRow(int rowIndex) {
         return res;
     }
 ```
-##
-#### _ _
-#### 描述：
-#### 思路：
+## Two Sum II - Input array is sorted
+#### _easy_
+#### 描述：给定一个数taget，且数组中有两个数相加等于target，求这两个数的索引
+#### 思路：从数组两端遍历，left 和right。如果这两个数相加小于target，则left往右移一位。若大于则right往左移一位。其中最值得思考的是为什么不存在这种情况：当left和right相加小于target时，0到left之间的一个数ll和right到数组末尾之间的一个数rr，ll+rr等于target.
 #### 代码：
 ```
+public int[] twoSum(int[] numbers, int target) {
+        int[] res = new int[2];
+        int left = 0,right = numbers.length-1;
+        while(left < right){
+            if(numbers[left]+numbers[right] < target)
+                left++;
+            else if(numbers[left]+numbers[right] > target)
+                right--;
+            else
+                break;
+        }
+        res[0] = left+1;
+        res[1] = right+1;
+        return res;
+}
 ```
-##
-#### _ _
-#### 描述：
-#### 思路：
+## Rotate Array
+#### _easy_
+#### 描述：For example, with n = 7 and k = 3, the array [1,2,3,4,5,6,7] is rotated to [5,6,7,1,2,3,4]
+#### 思路：一个是利用反转，先反转全部数组，再反转（0，k-1）和（k,length-1）的数组。另外一种思路是创建一个新的数组，将旧数组的数依次复制到新数组里。j=(i+k)%length;还有一个不用创建新数组，利用j=(i+k)%length一直复制，利用一个变量保存替换前的值。直到复制完一轮为止（但是这种方法我竟然没写出来。麻蛋）。
 #### 代码：
 ```
+public void rotate(int[] nums, int k) {
+    k %= nums.length;
+    reverse(nums, 0, nums.length - 1);
+    reverse(nums, 0, k - 1);
+    reverse(nums, k, nums.length - 1);
+}
+
+public void reverse(int[] nums, int start, int end) {
+    while (start < end) {
+        int temp = nums[start];
+        nums[start] = nums[end];
+        nums[end] = temp;
+        start++;
+        end--;
+    }
+}
+//方法二
+public void rotate(int[] nums, int k) {
+        k = k % nums.length; 
+        int[] oldNums = nums.clone();
+        for(int i = 0; i< nums.length;i++){
+            nums[(i+k)%nums.length] = oldNums[i]; 
+        }
+    }
 ```
 ##
 #### _ _
