@@ -99,12 +99,134 @@ public void rotate(int[] nums, int k) {
         }
     }
 ```
-##
-#### _ _
-#### 描述：
-#### 思路：
+##  Container With Most Water
+#### _ medium_
+#### 描述：有一个正整数数组，数组的每一位数字i代表一个玻璃版的高度，求数组中任意两个玻璃板代表的容器的容量的最大值。
+#### 思路：假设在数组中S10和S20代表的容量最大。我们从数组两端遍历数组。当左半边到达S10时，右半边到S21时。我们要做的是右半边网左移。根据题意分析，我们可以得到S10是大于S21.因为s10小于S21时，S10和S20代表的容量不可能是最大的容量。所以我们只需要判断左右两边的数值大小，小的移动即可。这个和求数组的任意两个数的值最大题类似。虽然判断的条件不同，但是主要思想类似。以后碰到类似的题（什么任意两个）可以从这个方向思考一下。
 #### 代码：
 ```
+public int maxArea(int[] height) {
+        int left = 0,right= height.length-1,res= 0;
+        while(left < right){
+            res = Math.max(Math.min(height[left],height[right])*(right-left),res);
+            if(height[left] > height[right])
+                right--;
+            else
+                left++;
+        }
+        return res;
+    }
+```
+## 3Sum Closes
+#### _ medium_
+#### 描述：给定一个数组和一个目标值。从数组中选取3个数，使得这三个数的和与目标值相近。求最相近的和。
+#### 思路：将数组排序，对于每一位数i，从i+1到数组末尾遍历。找到与target最相近的和，这部分和两个数的最大值算法类似，也是从数组两端开始遍历。本来以为可以用背包来实现，结果发现不对。
+#### 代码：
+```
+public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);，
+        int res = nums[0]+nums[1]+nums[2];
+        for(int i = 0;i < nums.length-2;i++){
+            int j = i+1;
+            int k = nums.length -1;
+            while(j < k){
+                int sum = nums[i]+nums[j]+nums[k];
+                if(Math.abs(target -sum) == 0)
+                    return target;
+                if(Math.abs(target-sum) < Math.abs(target-res)){
+                    res = sum;
+                }
+                if(sum > target)
+                    k--;
+                else
+                    j++;
+            }
+        }
+        return res;
+    }
+```
+## Jump Game
+#### _ medium_
+#### 描述：给定一个数组，数组的值代表可以向前几步，判断给定的数组能否到达最后一位、
+#### 思路：就是简单的用一个变量代表最远距离，最后判断是否大于数组长度。其实我还有一种想法，是不是除了最后一位可以为零以外，其他位为零就代表是不能到达了。我觉得可以.（麻蛋，被打脸了，【2,0，0】就是可以到达的）
+#### 代码：
+```
+bool canJump(int A[], int n) {
+    int i = 0;
+    for (int reach = 0; i < n && i <= reach; ++i)
+        reach = max(i + A[i], reach);
+    return i == n;
+}
+```
+## Spiral Matrix II
+#### _medium_
+#### 描述：给一个数n,输出长度为n的spiralMatirx矩阵。
+#### 思路：一行一列的顺序赋值很重要，下面的代码可以解决一些边界问题。注意边界变量减小的顺序，中间两个是减小的。
+#### 代码：
+```
+public int[][] generateMatrix(int n) {
+        // Declaration
+        int[][] matrix = new int[n][n];
+        
+        // Edge Case
+        if (n == 0) {
+            return matrix;
+        }
+        
+        // Normal Case
+        int rowStart = 0;
+        int rowEnd = n-1;
+        int colStart = 0;
+        int colEnd = n-1;
+        int num = 1; //change
+        
+        while (rowStart <= rowEnd && colStart <= colEnd) {
+            for (int i = colStart; i <= colEnd; i ++) {
+                matrix[rowStart][i] = num ++; //change
+            }
+            rowStart ++;
+            
+            for (int i = rowStart; i <= rowEnd; i ++) {
+                matrix[i][colEnd] = num ++; //change
+            }
+            colEnd --;
+            
+            for (int i = colEnd; i >= colStart; i --) {
+                if (rowStart <= rowEnd)
+                    matrix[rowEnd][i] = num ++; //change
+            }
+            rowEnd --;
+            
+            for (int i = rowEnd; i >= rowStart; i --) {
+                if (colStart <= colEnd)
+                    matrix[i][colStart] = num ++; //change
+            }
+            colStart ++;
+        }
+        
+        return matrix;
+    }
+```
+## Unique Paths II
+#### _medium_
+#### 描述：给定一个数组，数组内有零一值。零代表可以通过，1表示不能通过。问从矩阵左上角到右下角有多少种路径。只能往下和往右。
+#### 思路：dp[i][j] = dp[i-1][j]+dp[i][j-1]。下面代码是优化的空间复杂度是O(n);
+#### 代码：
+```
+public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+    int width = obstacleGrid[0].length;
+    int[] dp = new int[width];
+    dp[0] = 1;
+    for (int[] row : obstacleGrid) {
+        for (int j = 0; j < width; j++) {
+            if (row[j] == 1)
+                dp[j] = 0;
+            else if (j > 0)
+                dp[j] += dp[j - 1];
+        }
+    }
+    return dp[width - 1];
+}
 ```
 ##
 #### _ _
