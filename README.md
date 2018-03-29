@@ -297,21 +297,164 @@ bool searchMatrix(vector<vector<int> > &matrix, int target) {
         return matrix[r / m][r % m] == target;
     }
 ```
-## 13
+## 13 Subsets
+#### _medium_
+#### 描述：给定一个数组，求它的子集
+#### 思路：利用溯源法即可到结果
+#### 代码：
+```
+public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> tempList = new ArrayList<>();
+        backTrack(res,tempList,nums,0);
+        return res;
+    }
+    public void backTrack(List<List<Integer>> res,List<Integer> tempList,int[] nums,int start){
+        
+            res.add(new ArrayList<>(tempList));
+            for(int i = start;i < nums.length;i++){
+                tempList.add(nums[i]);
+                backTrack(res,tempList,nums,i+1);
+                tempList.remove(tempList.size() - 1);
+            }
+        
+    }
+```
+## 14 Word Search
+#### _medium_
+#### 描述：给定一个字符的二维数组，和一字符串s.判断字符串是否在二维数组内。匹配字符串的下一位必须得和当前位临近（在上下左右）。
+#### 思路：依旧按照图的广度优先遍历算法。先匹配当前位置的数组字符和字符串的头字符。如果匹配成功，就匹配该字符的上下左右位是否和字符串的下一位。为了让下一次遍历的时候不再返回之前匹配的，我们用与上256来让当前字符改变不能匹配。详细见代码。注意代码的书写，很简洁。可以参考一下。
+#### 代码：
+```
+public boolean exist(char[][] board, String word) {
+    char[] w = word.toCharArray();
+    for (int y=0; y<board.length; y++) {
+    	for (int x=0; x<board[y].length; x++) {
+    		if (exist(board, y, x, w, 0)) return true;
+    	}
+    }
+    return false;
+}
+
+private boolean exist(char[][] board, int y, int x, char[] word, int i) {
+	if (i == word.length) return true;
+	if (y<0 || x<0 || y == board.length || x == board[y].length) return false;
+	if (board[y][x] != word[i]) return false;
+	board[y][x] ^= 256;
+	boolean exist = exist(board, y, x+1, word, i+1)
+		|| exist(board, y, x-1, word, i+1)
+		|| exist(board, y+1, x, word, i+1)
+		|| exist(board, y-1, x, word, i+1);
+	board[y][x] ^= 256;
+	return exist;
+}
+```
+## 15 Remove Duplicates from Sorted Array II
+#### _medium_
+#### 描述：给定一个增序数组，修改数组，让每个数字最多出现两次。并返回修改后数组的长度。
+#### 思路：设置一个变量存储数字出现的次数，如果一个数字和前一个数字相同则加一，否则改成初始值。另一个变量存储新数组的长度，如果新的数组符合规范就移动到新数组的后面。因为之前的数字都已经遍历过了，所以可以当做新数组的存储值，而不用自己新创建一个数组。
+#### 代码：
+```
+public int removeDuplicates(int[] nums) {
+        if(nums.length == 0)
+            return 0;
+        int flag = 1;
+        int res = 1;
+        for(int i = 1;i < nums.length;i++){
+            if(nums[i] == nums[i-1]){
+                if(flag < 2){
+                    res ++;
+                    flag++;
+                    nums[res - 1] = nums[i];
+                }
+            }
+            else{
+                flag = 1;
+                res ++;
+                nums[res - 1] = nums[i];
+            }
+        }
+        return res;
+    }
+```
+## 16 Search in Rotated Sorted Array II
+#### _medium_
+#### 描述：给定一个数组，该数组是递增有序的，但是循环右移了几位。问给定一个数target，返回数组是否包括target. 
+#### 思路：利用二分法查找。可以更加中间数和数组两端来判断那边是有序的，那边是移动过的。详见下面代码。我还有一种解法：首先遍历整个数组，找到循环右移的数字k,然后利用二分查找，并且不用判断那边是有序的那边不是有序的。直接通过偏移来查找。（但是复杂度。。前面那个是O(logn）,最差O（n）。我这O(n）起步啊)
+#### 代码：
+```
+public boolean search(int[] nums, int target) {
+        int start = 0, end = nums.length - 1, mid = -1;
+        while(start <= end) {
+            mid = (start + end) / 2;
+            if (nums[mid] == target) {
+                return true;
+            }
+            //If we know for sure right side is sorted or left side is unsorted
+            if (nums[mid] < nums[end] || nums[mid] < nums[start]) {
+                if (target > nums[mid] && target <= nums[end]) {
+                    start = mid + 1;
+                } else {
+                    end = mid - 1;
+                }
+            //If we know for sure left side is sorted or right side is unsorted
+            } else if (nums[mid] > nums[start] || nums[mid] > nums[end]) {
+                if (target < nums[mid] && target >= nums[start]) {
+                    end = mid - 1;
+                } else {
+                    start = mid + 1;
+                }
+            //If we get here, that means nums[start] == nums[mid] == nums[end], then shifting out
+            //any of the two sides won't change the result but can help remove duplicate from
+            //consideration, here we just use end-- but left++ works too
+            } else {
+                end--;
+            }
+        }
+        
+        return false;
+    }
+```
+## 17 Construct Binary Tree from Preorder and Inorder Traversal
+#### _medium_
+#### 描述：给出一个数的前序和中序遍历，构建出该数
+#### 思路：利用递归思想，划分成子问题。不过最后的判断要注意，最好是要向下面代码那样，如果flag找不到了，就说明到末尾了。我之前写的是preIndex 等于preorder数组的长度时，就是末尾。但是这样会导致重复的，因为左子树永远不会到达数组末尾。
+#### 代码：
+```
+public TreeNode buildTree(int[] preorder, int[] inorder) {
+        TreeNode nowNode = buildChildTree(preorder,0,inorder,0,preorder.length -1);
+        return nowNode;
+    }
+    public TreeNode buildChildTree(int[] preorder,int preIndex,int[] inorder,int start,int end){
+        TreeNode nowNode = null;
+        int flag = -1;
+        for(int i = start;i <= end;i++){
+            if(preorder[preIndex] == inorder[i])
+                flag = i;
+        }
+        if(flag >= 0){
+            nowNode = new TreeNode(inorder[flag]);
+            nowNode.left = buildChildTree(preorder,preIndex + 1,inorder,start,flag -1);
+            nowNode.right = buildChildTree(preorder,preIndex+flag-start+1,inorder,flag + 1,end);
+        }
+        return nowNode;
+    }
+```
+## 18
 #### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
 ```
 ```
-## 14
+## 19
 #### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
 ```
 ```
-## 15
+## 20
 #### _medium_
 #### 描述：
 #### 思路：
