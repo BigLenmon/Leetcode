@@ -1,4 +1,4 @@
-# Leetcode 共15道
+# Leetcode 共25道
 ## 1 plusOne
 ### _easy_
 #### 描述：用一组数据表示一个整数，实现整数加一的操作
@@ -299,7 +299,7 @@ bool searchMatrix(vector<vector<int> > &matrix, int target) {
 ```
 ## 13 Subsets
 #### _medium_
-#### 描述：给定一个数组，求它的子集
+#### 描述：给定一个数组(不重复），求它的子集
 #### 思路：利用溯源法即可到结果
 #### 代码：
 ```
@@ -590,13 +590,30 @@ public void reverseSort(int[] num, int start, int end){
         swap(num,i,start+end-i);
 }
 ```
-## 23 
+## 23 Subsets II
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组（可重复），求它的子集
+#### 思路：还是用溯源法。不过遇到相同的数字，就只加入第一个，之后的跳过去。
 #### 代码：
 ```
-
+public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> temp = new ArrayList<>();
+        Arrays.sort(nums);
+        traceBack(temp,res,nums,0);
+        return res;
+    }
+    public  void traceBack(List<Integer> temp,List<List<Integer>> res,int[] nums,int start){
+        res.add(new ArrayList<>(temp));
+        int i = start;
+        while (i < nums.length){
+            temp.add(nums[i]);
+            traceBack(temp,res,nums,i+1);
+            temp.remove(temp.size()-1);
+            i++;
+            while (i < nums.length  && nums[i] == nums[i-1]) i++;
+        }
+    }
 ```
 ## 24 
 #### _medium_
