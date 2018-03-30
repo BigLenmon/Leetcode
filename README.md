@@ -615,24 +615,143 @@ public List<List<Integer>> subsetsWithDup(int[] nums) {
         }
     }
 ```
-## 24 
+## 24 Search for a Range
 #### _medium_
+#### 描述：给出一个递增有序数组（包含重复元素），和一个目标值。返回目标值是否在数组内，如果在给出开始位置和结束位置。
+#### 思路：二分查找两次，一次查找左边界，一次查找右边界。
+#### 代码：
+```
+vector<int> searchRange(int A[], int n, int target) {
+    int i = 0, j = n - 1;
+    vector<int> ret(2, -1);
+    // Search for the left one
+    while (i < j)
+    {
+        int mid = (i + j) /2;
+        if (A[mid] < target) i = mid + 1;
+        else j = mid;
+    }
+    if (A[i]!=target) return ret;
+    else ret[0] = i;
+    
+    // Search for the right one
+    j = n-1;  // We don't have to set i to 0 the second time.
+    while (i < j)
+    {
+        int mid = (i + j) /2 + 1;	// Make mid biased to the right
+        if (A[mid] > target) j = mid - 1;  
+        else i = mid;				// So that this won't make the search range stuck.
+    }
+    ret[1] = j;
+    return ret; 
+}
+```
+## 25 Spiral Matrix
+#### _medium_
+#### 描述：给一个二维数组，返回这个数组的sprial遍历
+#### 思路：和Spiral Matrix II题很像，注意遍历顺序，和while的判断条件。
+#### 代码：
+```
+public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> res = new ArrayList<Integer>();
+        
+        if (matrix.length == 0) {
+            return res;
+        }
+        
+        int rowBegin = 0;
+        int rowEnd = matrix.length-1;
+        int colBegin = 0;
+        int colEnd = matrix[0].length - 1;
+        
+        while (rowBegin <= rowEnd && colBegin <= colEnd) {
+            // Traverse Right
+            for (int j = colBegin; j <= colEnd; j ++) {
+                res.add(matrix[rowBegin][j]);
+            }
+            rowBegin++;
+            
+            // Traverse Down
+            for (int j = rowBegin; j <= rowEnd; j ++) {
+                res.add(matrix[j][colEnd]);
+            }
+            colEnd--;
+            
+            if (rowBegin <= rowEnd) {
+                // Traverse Left
+                for (int j = colEnd; j >= colBegin; j --) {
+                    res.add(matrix[rowEnd][j]);
+                }
+            }
+            rowEnd--;
+            
+            if (colBegin <= colEnd) {
+                // Traver Up
+                for (int j = rowEnd; j >= rowBegin; j --) {
+                    res.add(matrix[j][colBegin]);
+                }
+            }
+            colBegin ++;
+        }
+        
+        return res;
+    }
+```
+## 26 Rotate Image
+#### _medium_
+#### 描述：给定一个二维数组，求将这个数组顺时针旋转90度。
+#### 思路：按一个个位置来变化。并且每变化一个位置，就讲相应的四个位置的值都顺序变化，详见代码。
+#### 代码：
+```
+public void rotate(int[][] matrix) {
+        for(int i = 0;i <= (matrix.length - 1)/2;i++){
+            for(int j = i;j <= matrix.length - 2 - i;j++){
+                swap(matrix,i,j);
+            }
+        }
+    }
+    public void swap(int[][] M,int a1,int b1){
+        int temp = M[a1][b1];
+        M[a1][b1] = M[M.length - 1 - b1][a1];
+        M[M.length - 1 - b1][a1] = M[M.length - 1 - a1][M.length - 1 - b1];
+        M[M.length - 1 - a1][M.length - 1- b1] = M[b1][M.length - 1- a1];
+        M[b1][M.length - 1- a1] = temp;
+    }
+```
+## 27 
+#### 
 #### 描述：
 #### 思路：
 #### 代码：
 ```
 
 ```
-## 25 
-#### _medium_
+## 28 
+#### 
 #### 描述：
 #### 思路：
 #### 代码：
 ```
 
 ```
-## 26 
-#### _medium_
+## 29 
+#### 
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 30 
+#### 
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 31 
+#### 
 #### 描述：
 #### 思路：
 #### 代码：
