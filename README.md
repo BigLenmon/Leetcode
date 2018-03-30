@@ -440,24 +440,185 @@ public TreeNode buildTree(int[] preorder, int[] inorder) {
         return nowNode;
     }
 ```
-## 18
+## 18 Triangle
+#### _medium_
+#### 描述：给定一个三角形，从三角形的头往下走，问到达底部边时，最小值是多少，往下只能往正下方和右下方。
+#### 思路：dp[i][j] = Math.min(dp[i-1][j-1],dp[i-1][j)。在这题中如果不用二维数组来存储的话，那就要两个一维数组。
+#### 代码：
+```
+public int minimumTotal(List<List<Integer>> triangle) {
+        int res[] = new int[triangle.size()];
+        int temp[] = new int[triangle.size()];
+        for(int i= 0;i < triangle.size();i++){
+            for(int j = 0;j <= i;j++){
+                if(j == 0){
+                    res[j] = temp[j]+triangle.get(i).get(j);
+                }else if(j == i){
+                    res[j] = temp[j-1]+triangle.get(i).get(j);
+                }else{
+                    res[j] = Math.min(temp[j-1],temp[j]) + triangle.get(i).get(j);
+                }
+            }
+            for(int j = 0;j <= i;j++)
+                temp[j] = res[j];
+            
+        }
+        int min = res[0];
+        for(int i = 1;i < res.length;i++){
+            min = Math.min(min,res[i]);
+        }
+        return min;
+    }
+```
+## 19 Maximum Product Subarray
+#### _medium_
+#### 描述：给定一个数组（里面有正有负），求连续子串的最大乘积；
+#### 思路：因为是乘积的最大值，所以一般情况下，乘上最新的一位后。当前值不是最大就是最小。所以利用两个变量存储当前以来的最大值和最小值。另外为了防止乘上零。每次都得对最大值和最新一位的值进行比较，更新最大值。详细见代码（写的nb）.
+#### 代码：
+```
+public int maxProduct(int[] nums) {
+        int r = nums[0];
+        int max,min;
+        max = min = r;
+        for(int i= 1;i < nums.length;i++){
+            int item= nums[i];
+            if(item < 0){
+                int temp = min;
+                min = max;
+                max = temp;
+            }
+            max = Math.max(item,item * max);
+            min = Math.min(item,item * min);
+            r = Math.max(r,max);
+        }
+        return r;
+    }
+```
+## 20 Find Minimum in Rotated Sorted Array
+#### _medium_
+#### 描述：给定一个数组，这个数组是一个递增排序数组，但是循环右移了几位。求这个数组的最小值
+#### 思路：利用二分查找，首先通过数组两端判断是否有序，如果有序就返回第一位。否则利用mid = （lo+hi）/2和lo,hi判断数组最小值在哪半边（最小值在不是有序的半边）。下面代码nb。我的想法比没有这个简洁。
+#### 代码：
+```
+ int findMin(vector<int> &num) {
+        int start=0,end=num.size()-1;
+        
+        while (start<end) {
+            if (num[start]<num[end])
+                return num[start];
+            
+            int mid = (start+end)/2;
+            
+            if (num[mid]>=num[start]) {
+                start = mid+1;
+            } else {
+                end = mid;
+            }
+        }
+        
+        return num[start];
+    }
+```
+## 21 Minimum Size Subarray Sum
+#### _medium_
+#### 描述：给定一个整数组，和一个目标值。问当连续子串的和大于等于目标值时，其连续子串的最小值为多少。如果找不到返回0
+#### 思路：设置两个变量，分别表示子串的头和尾。如果子串相加小于目标值，尾变量加一。否则头加一。这样就可以最小长度了。
+#### 代码：
+```
+public int minSubArrayLen(int s, int[] a) {
+        if (a == null || a.length == 0)
+            return 0;
+        int i = 0, j = 0, sum = 0, min = a.length+1;
+  
+        while (j < a.length) {
+            sum += a[j++];
+    
+            while (sum >= s) {
+                min = Math.min(min, j - i);
+                sum -= a[i++];
+            }
+        }
+  
+        return min == a.legnth+1 ? 0 : min;
+    }
+```
+## 22 Next Permutation
+#### _medium_
+#### 描述：给定一个数组，找到下一个permutation的数组。如果没有就返回最小的。
+#### 思路：从后往前遍历，找到后一位大于前一位的。设前一位为val。表示再往前的几位就可以不用动。然后再从后往前遍历，找到第一个大于val的值（k）。交换k与val。再将k之后的数组反序，就可以得到了后一位了。
+#### 代码：
+```
+public void nextPermutation(int[] num) {
+    int n=num.length;
+    if(n<2)
+        return;
+    int index=n-1;        
+    while(index>0){
+        if(num[index-1]<num[index])
+            break;
+        index--;
+    }
+    if(index==0){
+        reverseSort(num,0,n-1);
+        return;
+    }
+    else{
+        int val=num[index-1];
+        int j=n-1;
+        while(j>=index){
+            if(num[j]>val)
+                break;
+            j--;
+        }
+        swap(num,j,index-1);
+        reverseSort(num,index,n-1);
+        return;
+    }
+}
+
+public void swap(int[] num, int i, int j){
+    int temp=0;
+    temp=num[i];
+    num[i]=num[j];
+    num[j]=temp;
+}
+
+public void reverseSort(int[] num, int start, int end){   
+    if(start>end)
+        return;
+    for(int i=start;i<=(end+start)/2;i++)
+        swap(num,i,start+end-i);
+}
+```
+## 23 
 #### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
 ```
+
 ```
-## 19
+## 24 
 #### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
 ```
+
 ```
-## 20
+## 25 
 #### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
 ```
+
+```
+## 26 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
 ```
