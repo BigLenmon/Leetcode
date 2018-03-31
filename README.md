@@ -718,13 +718,38 @@ public void rotate(int[][] matrix) {
         M[b1][M.length - 1- a1] = temp;
     }
 ```
-## 27 
-#### 
-#### 描述：
-#### 思路：
+## 27 Generate Parentheses
+#### _medium_
+#### 描述：给定一个值，求符合规定的括号组合。 
+For example, given n = 3, a solution set is:
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+#### 思路：利用溯源法。计算有串中已有的左括号数目和右括号数目。每次溯源都可以选择添加左括号或者右括号。知道字符串到达最大长度。
 #### 代码：
 ```
-
+public List<String> generateParenthesis(int n) {
+        List<String> list = new ArrayList<String>();
+        backtrack(list, "", 0, 0, n);
+        return list;
+    }
+    
+    public void backtrack(List<String> list, String str, int open, int close, int max){
+        
+        if(str.length() == max*2){
+            list.add(str);
+            return;
+        }
+        
+        if(open < max)
+            backtrack(list, str+"(", open+1, close, max);
+        if(close < open)
+            backtrack(list, str+")", open, close+1, max);
+    }
 ```
 ## 28 
 #### 
