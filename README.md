@@ -1,4 +1,4 @@
-# Leetcode 共25道
+# Leetcode 共35道
 ## 1 plusOne
 ### _easy_
 #### 描述：用一组数据表示一个整数，实现整数加一的操作
@@ -729,7 +729,7 @@ For example, given n = 3, a solution set is:
   "()(())",
   "()()()"
 ]
-#### 思路：利用溯源法。计算有串中已有的左括号数目和右括号数目。每次溯源都可以选择添加左括号或者右括号。知道字符串到达最大长度。
+#### 思路：利用溯源法。计算有串中已有的左括号数目和右括号数目。每次溯源都可以选择添加左括号或者右括号。直到字符串到达最大长度。
 #### 代码：
 ```
 public List<String> generateParenthesis(int n) {
@@ -751,32 +751,216 @@ public List<String> generateParenthesis(int n) {
             backtrack(list, str+")", open, close+1, max);
     }
 ```
-## 28 
-#### 
+## 28 Product of Array Except Self
+#### _medium_
+#### 描述：给定一个整数数组，返回一个数组，返回数组h的每个元素等于给定数组除了该元素以外元素的乘积。（不允许用除法）
+#### 思路：遍历两次数组，第一次从头到尾，得到一个数组，数组每个值等于当前位置以前的值的乘积。第二次从尾到头遍历数组，保存一个值，这值是当前位置以后树的乘积。这样就可以得到结果。
+#### 代码：
+```
+public int[] productExceptSelf(int[] nums) {
+    int n = nums.length;
+    int[] res = new int[n];
+    res[0] = 1;
+    for (int i = 1; i < n; i++) {
+        res[i] = res[i - 1] * nums[i - 1];
+    }
+    int right = 1;
+    for (int i = n - 1; i >= 0; i--) {
+        res[i] *= right;
+        right *= nums[i];
+    }
+    return res;
+}
+```
+## 29 Find Peak Element
+#### _medium_
+#### 描述：给定一个数组，求数组中任意一个nums[i] > nums[i-1] && nums[i] > nums[i+1]的数
+#### 思路：一开始用的是遍历，复杂度是O（n）.后来看了别人的代码，发现二分查找也能行，就是保证数组的边界旁边的数小于边界。
+#### 代码：
+```
+int findPeakElement(vector<int> &nums)
+{
+    int n = nums.size();
+    if(0 == n) return -1;
+    if(1 == n) return 0;
+    if(2 == n) return nums[0] > nums[1] ? 0 : 1;
+    // 
+    int low = 0, high = n - 1;
+    while(low + 2 <= high)
+    {
+        int mid = low + (high - low) / 2;            
+        if(nums[mid - 1] < nums[mid] && nums[mid] > nums[mid + 1])
+            return mid;
+        if(nums[mid - 1] > nums[mid])
+            high = mid;
+        else
+            low = mid;
+    }
+    // 
+    return nums[low] > nums[high] ? low : high;
+}
+```
+## 30 Unique Paths
+#### _medium_
+#### 描述：给定一个二维数组，一个机器人从左上角开始，每次只能往下或者往右。问到右下角共有多少不同的路径
+#### 思路：简单的动态规划，dp[i[[j] = d[i-1][j]+dp[i-1][j-1];
+#### 代码：
+```
+public int uniquePaths(int m, int n) {
+        int[] res = new int[n];
+        for(int i = 0;i < m;i++){
+            for(int j = 0;j < n;j ++){
+                if(i == 0)
+                    res[j] = 1;
+                else if(j == 0)
+                    res[j] = 1;
+                else
+                    res[j] = res[j] + res[j-1];
+            }
+        }
+        return res[n-1];
+}
+```
+## 31 Sort Colors
+#### _medium_
+#### 描述：给定一个数组，里面包括数组1,2,0.请对数组排序，数组1都在中间，0和2两端。
+#### 思路：设两个变量，second表示2之前的数的位置，zero表示0之后数的位置。遍历数组，然后交换数字。下面的代码超级简洁！！！bro
+#### 代码：
+```
+public:
+        void sortColors(int A[], int n) {
+            int second=n-1, zero=0;
+            for (int i=0; i<=second; i++) {
+                while (A[i]==2 && i<second) swap(A[i], A[second--]);
+                while (A[i]==0 && i>zero) swap(A[i], A[zero++]);
+            }
+        }
+```
+## 32 3Sum
+#### _medium_
+#### 描述：给定一个数组，求数组内三个元素相加为零的集合。
+#### 思路：用了溯源法，结果超时。那只能用之前的3Sum close 算法用的方法。看来溯源法还是容易超时。
+#### 代码：
+```
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new LinkedList<>();
+        for(int i = 0;i< nums.length -2;i++){
+            if (i == 0 || (i > 0 && nums[i] != nums[i-1])) {
+            int left = i + 1;
+            int right = nums.length -1;
+            int sum = 0 - nums[i];
+            while (left < right){
+                if(nums[left] + nums[right] == sum){
+                    res.add(Arrays.asList(nums[i],nums[left],nums[right]));
+                    while (left<right && nums[left] == nums[left+1]) left++;
+                    while (left < right && nums[right] == nums[right-1]) right--;
+                    left++;
+                    right--;
+                }
+                else if(nums[left] + nums[right] < sum)
+                    left++;
+                else
+                    right--;
+            }
+            }
+        }
+        return  res;
+    }
+```
+## 33 Combination Sum
+#### _medium_
+#### 描述：给定一个数组和一个目标值，求数组内元素相加等于目标值的组合。元素可以重复。
+#### 思路：利用回溯法。感觉可以总结出这类题的规律了。总是从一个大集合里找出子集来满足一定的条件。（目前感觉是这样，之后看看符不符合）。
+#### 代码：
+```
+public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> res = new ArrayList<>();
+        backtrack(res,new ArrayList<Integer>(),candidates,0,target);
+        return res;
+    }
+    public void backtrack(List<List<Integer>> res,List<Integer> list,int[] candidates,int index,int target){
+        if(target == 0)
+            res.add(new ArrayList<>(list));
+        else{
+            while(index < candidates.length){
+                if(target >= candidates[index]){
+                    list.add(candidates[index]);
+                    backtrack(res,list,candidates,index,target-candidates[index]); //这里是允许重复，要不然传入的index得加一
+                    list.remove(list.size()-1);
+                }
+                index++;
+            }
+        }
+    }
+```
+## 34 Combination Sum II
+#### _medium_
+#### 描述：和上一题一样，只不过不允许重复
+#### 思路：也在上面代码写了，修改一个变量。
+#### 代码：
+```
+public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> res = new ArrayList();
+        Arrays.sort(candidates);
+        backtracing(res,new ArrayList(),candidates,target,0);
+        return res;
+    }
+    public void backtracing(List<List<Integer>> list, List<Integer> tempList,int[] nums,int target,int start){
+        if(target < 0 ) return;
+        else if(target == 0) list.add(new ArrayList<>(tempList));
+        else{
+            for(int i = start; i <= nums.length - 1; i++){
+                if(i > start && nums[i] == nums[i-1]) continue;
+                tempList.add(nums[i]);
+                backtracing(list,tempList,nums,target - nums[i],i+1);
+                tempList.remove(tempList.size() - 1);
+            }
+        }
+    }
+```
+## 35 
+#### _hard_
 #### 描述：
 #### 思路：
 #### 代码：
 ```
 
 ```
-## 29 
-#### 
+## 36 
+#### _hard_
 #### 描述：
 #### 思路：
 #### 代码：
 ```
 
 ```
-## 30 
-#### 
+## 37 
+#### _hard_
 #### 描述：
 #### 思路：
 #### 代码：
 ```
 
 ```
-## 31 
-#### 
+## 38 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 39 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 40 
+#### _hard_
 #### 描述：
 #### 思路：
 #### 代码：
