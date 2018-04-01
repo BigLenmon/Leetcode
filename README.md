@@ -919,7 +919,118 @@ public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         }
     }
 ```
-## 35 
+## 35 First Missing Positive
+#### _hard_
+#### 描述给定一个整数数组，找到一个缺失的整数，
+For example,
+Given [1,2,0] return 3,
+and [3,4,-1,1] return 2. 
+#### 思路：假设数组中有k个正整数，那缺失的正整数一定在区间【1，k+1】之间。所以我们先遍历一遍数组，将正整数全部移到左侧（0，k-1）。然后将数组前k-1位中值对应的位置变成负数。这个再遍历一遍数组，如果有i位置的数值大于0，那么缺失的值是i+1。（我之前有一种错误的思路:先计算数组中正整数的个数和他们的相加的和。这样通过最小的值和数组正整数的个数可以得到连续数组的应该和，和相加和比较，就可以得到缺失的值。但是这样是错误的，因为数组中的正整数不会就缺失一位整数，而其他的都是连续的。比如2,4,6,8。这样这个方法就得不到正确结果）
+#### 代码：
+```
+public int firstMissingPositive(int[] A) {
+    int n=A.length;
+    if(n==0)
+        return 1;
+    int k=partition(A)+1;
+    int temp=0;
+    int first_missing_Index=k;
+    for(int i=0;i<k;i++){
+        temp=Math.abs(A[i]);
+        if(temp<=k)
+            A[temp-1]=(A[temp-1]<0)?A[temp-1]:-A[temp-1];
+    }
+    for(int i=0;i<k;i++){
+        if(A[i]>0){
+            first_missing_Index=i;
+            break;
+        }
+    }
+    return first_missing_Index+1;
+}
+
+public int partition(int[] A){
+    int n=A.length;
+    int q=-1;
+    for(int i=0;i<n;i++){
+        if(A[i]>0){
+            q++;
+            swap(A,q,i);
+        }
+    }
+    return q;
+}
+
+public void swap(int[] A, int i, int j){
+    if(i!=j){
+        A[i]^=A[j];
+        A[j]^=A[i];
+        A[i]^=A[j];
+    }
+}
+```
+## 36 Jump Game II
+#### _hard_
+#### 描述：给定以一个数组，数组里的值表示最大可以移动的值。问从数组头到数组尾最短移动多少次。
+#### 思路：用curEnd表示当前跳能到达最远的距离，curFurther表示下一跳能到达最远的距离。每次更新curend就讲跳数加一。（也可以用动态规划，不过复杂度有O（n* n）。还是之前的方法好）
+#### 代码：
+```
+    public int jump(int[] nums) {
+        int jumps = 0;
+        int curEnd = 0;
+        int curFurther = 0;
+        for(int i = 0;i < nums.length - 1; i++){
+            curFurther = Math.max(curFurther,i+nums[i]);
+            if(i == curEnd){
+                jumps++;
+                curEnd = curFurther;
+            }
+        }
+        return jumps;
+    }
+```
+## 37 Largest Rectangle in Histogram
+#### _hard_
+#### 描述：给定一个数组（正整数）。里面的值表示宽度为一的长方形的高。问数组中可以找到最大面积的长方形是多少？
+#### 思路：创建两个数组lessFromLeft和lessFromRight。分别表示比当前值小的左侧位置和右侧位置。这样面积就可以用height[i] * (lessFromRight[i] - lessFromLeft[i] - 1)求值。创建数组的目的就是能在O（1）时间内找到比当前值小的左侧和右侧位置。
+#### 代码：
+```
+public int largestRectangleArea(int[] height) {
+        if (height == null || height.length == 0) {
+        return 0;
+    }
+    int[] lessFromLeft = new int[height.length]; // idx of the first bar the left that is lower than current
+    int[] lessFromRight = new int[height.length]; // idx of the first bar the right that is lower than current
+    lessFromRight[height.length - 1] = height.length;
+    lessFromLeft[0] = -1;
+
+    for (int i = 1; i < height.length; i++) {
+        int p = i - 1;
+
+        while (p >= 0 && height[p] >= height[i]) {
+            p = lessFromLeft[p];
+        }
+        lessFromLeft[i] = p;
+    }
+
+    for (int i = height.length - 2; i >= 0; i--) {
+        int p = i + 1;
+
+        while (p < height.length && height[p] >= height[i]) {
+            p = lessFromRight[p];
+        }
+        lessFromRight[i] = p;
+    }
+
+    int maxArea = 0;
+    for (int i = 0; i < height.length; i++) {
+        maxArea = Math.max(maxArea, height[i] * (lessFromRight[i] - lessFromLeft[i] - 1));
+    }
+
+    return maxArea;
+    }
+```
+## 38 Best Time to Buy and Sell Stock III
 #### _hard_
 #### 描述：
 #### 思路：
@@ -927,31 +1038,7 @@ public List<List<Integer>> combinationSum2(int[] candidates, int target) {
 ```
 
 ```
-## 36 
-#### _hard_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
-```
-## 37 
-#### _hard_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
-```
-## 38 
-#### _hard_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
-```
-## 39 
+## 39 Find Minimum in Rotated Sorted Array II
 #### _hard_
 #### 描述：
 #### 思路：
