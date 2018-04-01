@@ -1,4 +1,4 @@
-# Leetcode 共35道
+# Leetcode 共45道
 ## 1 plusOne
 ### _easy_
 #### 描述：用一组数据表示一个整数，实现整数加一的操作
@@ -778,27 +778,22 @@ public int[] productExceptSelf(int[] nums) {
 #### 思路：一开始用的是遍历，复杂度是O（n）.后来看了别人的代码，发现二分查找也能行，就是保证数组的边界旁边的数小于边界。
 #### 代码：
 ```
-int findPeakElement(vector<int> &nums)
-{
-    int n = nums.size();
-    if(0 == n) return -1;
-    if(1 == n) return 0;
-    if(2 == n) return nums[0] > nums[1] ? 0 : 1;
-    // 
-    int low = 0, high = n - 1;
-    while(low + 2 <= high)
+int findPeakElement(const vector<int> &num) 
     {
-        int mid = low + (high - low) / 2;            
-        if(nums[mid - 1] < nums[mid] && nums[mid] > nums[mid + 1])
-            return mid;
-        if(nums[mid - 1] > nums[mid])
-            high = mid;
-        else
-            low = mid;
+        int low = 0;
+        int high = num.size()-1;
+        
+        while(low < high)
+        {
+            int mid1 = (low+high)/2;
+            int mid2 = mid1+1;
+            if(num[mid1] < num[mid2])
+                low = mid2;
+            else
+                high = mid1;
+        }
+        return low;
     }
-    // 
-    return nums[low] > nums[high] ? low : high;
-}
 ```
 ## 30 Unique Paths
 #### _medium_
@@ -1032,13 +1027,149 @@ public int largestRectangleArea(int[] height) {
 ```
 ## 38 Best Time to Buy and Sell Stock III
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组，数组中的值表示股票的价格，求操作后得到最大的利润。（只允许买卖两次）
+#### 思路：有两种思路，一种是专门针对只允许买卖k次的（soltion1）。复杂度O(kn)。第二次则针对两次或者三次买卖的（多的就复杂了）（solution2）。代码里都有足够提示。PS：这类题真的难，得花时间记住。
 #### 代码：
+#### solution 1
 ```
-
+int maxProfit(vector<int> &prices) {
+        // f[k, ii] represents the max profit up until prices[ii] (Note: NOT ending with prices[ii]) using at most k transactions. 
+        // f[k, ii] = max(f[k, ii-1], prices[ii] - prices[jj] + f[k-1, jj]) { jj in range of [0, ii-1] }
+        //          = max(f[k, ii-1], prices[ii] + max(f[k-1, jj] - prices[jj]))
+        // f[0, ii] = 0; 0 times transation makes 0 profit
+        // f[k, 0] = 0; if there is only one price data point you can't make any money no matter how many times you can trade
+        if (prices.size() <= 1) return 0;
+        else {
+            int K = 2; // number of max transation allowed
+            int maxProf = 0;
+            vector<vector<int>> f(K+1, vector<int>(prices.size(), 0));
+            for (int kk = 1; kk <= K; kk++) {
+                int tmpMax = f[kk-1][0] - prices[0];
+                for (int ii = 1; ii < prices.size(); ii++) {
+                    f[kk][ii] = max(f[kk][ii-1], prices[ii] + tmpMax);
+                    tmpMax = max(tmpMax, f[kk-1][ii] - prices[ii]);
+                    maxProf = max(f[kk][ii], maxProf);
+                }
+            }
+            return maxProf;
+        }
+    }
+```
+#### solution2
+```
+public int maxProfit(int[] prices) {
+        int hold1 = Integer.MIN_VALUE, hold2 = Integer.MIN_VALUE;
+        int release1 = 0, release2 = 0;
+        for(int i:prices){                              // Assume we only have 0 money at first
+            release2 = Math.max(release2, hold2+i);     // The maximum if we've just sold 2nd stock so far.
+            hold2    = Math.max(hold2,    release1-i);  // The maximum if we've just buy  2nd stock so far.
+            release1 = Math.max(release1, hold1+i);     // The maximum if we've just sold 1nd stock so far.
+            hold1    = Math.max(hold1,    -i);          // The maximum if we've just buy  1st stock so far. 
+        }
+        return release2; ///Since release1 is initiated as 0, so release2 will always higher than release1.
+    }
 ```
 ## 39 Find Minimum in Rotated Sorted Array II
+#### _hard_
+#### 描述：给定一个递增有序的数组，但是数组循环右移了几位，求这个数组的最小值（数值可以重复）。
+#### 思路：又是这种问题，对于循环右移的问题，找到最小值或者特定值。一般利用二分查找就可以解决问题，因为循环总会导致半边有序半边无序，我们可以对比数组两端来判断是否有序。但是如果有重复数组并且是找特定值，就得多判断几次，因为光判断中间和数组两端并不能判断特定值在哪个半边。
+#### 代码：
+```
+int findMin(vector<int> &num) {
+        int lo = 0;
+        int hi = num.size() - 1;
+        int mid = 0;
+        
+        while(lo < hi) {
+            mid = lo + (hi - lo) / 2;
+            
+            if (num[mid] > num[hi]) {
+                lo = mid + 1;
+            }
+            else if (num[mid] < num[hi]) {
+                hi = mid;
+            }
+            else { // when num[mid] and num[hi] are same
+                hi--;
+            }
+        }
+        return num[lo];
+    }
+```
+## 40 Maximal Rectangle
+#### _hard_
+#### 描述：给定一个二维数组，里面是0和1，问数组中由1组成的矩形面积最大为多少。
+#### 思路：按一行行来计算最大的面积。每层只和上一层做比较。求出这一位的左边界和右边界（这些计算要考虑到上一层的左边界和右边界），这样我们求的面积就可能包括上面一层的情况。有点难以描述，看代码吧==！
+#### 代码：
+```
+public int maximalRectangle(char[][] matrix) {
+        if(matrix.length == 0 || matrix[0].length == 0)
+            return 0;
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int[] hign = new int[cols];
+        int[] left = new int[cols];
+        int[] right = new int[cols];
+        Arrays.fill(right,cols);
+        int res = 0;
+        for(int i= 0;i < rows;i++){
+            int cur_left = 0;
+            int cur_rigth = cols;
+            for(int j = 0;j < cols;j++){
+                if(matrix[i][j] == '1'){
+                    left[j] = Math.max(left[j],cur_left);
+                    hign[j]++;
+                }else{
+                    hign[j] = 0;
+                    left[j] = 0;
+                    cur_left = j+1;
+                }
+            }
+            for(int j = cols -1;j >= 0;j--){
+                if(matrix[i][j] == '1')
+                    right[j] = Math.min(right[j],cur_rigth);
+                else{
+                    right[j] = cols;
+                    cur_rigth = j;
+                }
+            }
+            for(int j = 0; j < cols;j++)
+                res = Math.max(res,(right[j]-left[j]) * hign[j]);
+        }
+        return res;
+    }
+```
+## 41  Insert Interval
+#### _hard_
+#### 描述：给定一连串的区间，问加入一个区间后，合并相同区间，求最后的区间
+ Example 1:
+Given intervals [1,3],[6,9], insert and merge [2,5] in as [1,5],[6,9].
+
+Example 2:
+Given [1,2],[3,5],[6,7],[8,10],[12,16], insert and merge [4,9] in as [1,2],[3,10],[12,16]. 
+#### 思路：和正常想到方法一样，找到要合并的区间，合并。然后返回。主要是数据结构要选好，代码得简洁。
+#### 代码：
+```
+public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
+         List<Interval> result = new LinkedList<>();
+        int i = 0;
+    // add all the intervals ending before newInterval starts
+        while (i < intervals.size() && intervals.get(i).end < newInterval.start)
+            result.add(intervals.get(i++));
+    // merge all overlapping intervals to one considering newInterval
+        while (i < intervals.size() && intervals.get(i).start <= newInterval.end) {
+            newInterval = new Interval( // we could mutate newInterval here also
+                    Math.min(newInterval.start, intervals.get(i).start),
+                    Math.max(newInterval.end, intervals.get(i).end));
+            i++;
+        }
+        result.add(newInterval); // add the union of intervals we got
+    // add all the rest
+        while (i < intervals.size()) result.add(intervals.get(i++)); 
+        return result;
+    }
+```
+## 42 
 #### _hard_
 #### 描述：
 #### 思路：
@@ -1046,7 +1177,31 @@ public int largestRectangleArea(int[] height) {
 ```
 
 ```
-## 40 
+## 43 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 44 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 45 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 46 
 #### _hard_
 #### 描述：
 #### 思路：
