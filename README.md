@@ -1169,31 +1169,159 @@ public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
         return result;
     }
 ```
-## 42 
+## 42 Longest Consecutive Sequence
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组，问有子元素组成的最长连续串的长度（子元素不需要连续）
+For example,
+Given [100, 4, 200, 1, 3, 2],
+The longest consecutive elements sequence is [1, 2, 3, 4]. Return its length: 4. 
+#### 思路：利用hashMap来查找，只有边界元素才存储连续串的长度。每次添加新元素的时候，查看新元素是否会改变边界，如果改变了，就更新边界元素的值。
 #### 代码：
 ```
-
+public int longestConsecutive(int[] nums) {
+        int res = 0;
+        HashMap<Integer,Integer> myMap = new HashMap<Integer,Integer>();
+        for(int n : nums){
+            if(!myMap.containsKey(n)){
+                int left = (myMap.containsKey(n-1)) ? myMap.get(n-1) : 0;
+                int right = (myMap.containsKey(n+1)) ? myMap.get(n+1) : 0;
+                int lengt = left + right + 1;
+                res = Math.max(res,lengt);
+                myMap.put(n,lengt);
+                myMap.put(n-left,lengt);
+                myMap.put(n+right,lengt);
+            }
+        }
+        return res;
+    }
 ```
-## 43 
+## 43 Trapping Rain Water
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组，数组里的值代表宽度为一的矩形高度。问有这些矩形组成的图形，最多能存储多少水？
+#### 思路：从数组两端遍历，首先比较两端的高度，小的一方说明自己这边高度不是最大，可以存储水。并同时更新两端的高度。
 #### 代码：
 ```
-
+int trap(int A[], int n) {
+        int left=0; int right=n-1;
+        int res=0;
+        int maxleft=0, maxright=0;
+        while(left<=right){
+            if(A[left]<=A[right]){
+                if(A[left]>=maxleft) maxleft=A[left];
+                else res+=maxleft-A[left];
+                left++;
+            }
+            else{
+                if(A[right]>=maxright) maxright= A[right];
+                else res+=maxright-A[right];
+                right--;
+            }
+        }
+        return res;
+    }
 ```
-## 44 
+## 44 Word Ladder II
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定String start,string end和List<String>list。start每次只从list中挑选一个海明距离为1的string。问最短从start变形为end
+For example,
+Given:
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log","cog"]
+
+Return
+  [
+    ["hit","hot","dot","dog","cog"],
+    ["hit","hot","lot","log","cog"]
+  ]
+
+#### 思路：首先是找到每个string在list中距离为1的所有string（下面代码是用迪杰斯特拉来求得的，并且求得了最短路径），然后利用BFS，来选择结果。
 #### 代码：
 ```
+Map<String,List<String>> map;
+List<List<String>> results;
+public List<List<String>> findLadders(String start, String end, List<String> dict) {   	
+        results= new ArrayList<List<String>>();
+        if (dict.size() == 0)
+			return results;
+        
+        int min=Integer.MAX_VALUE;
+        
+        Queue<String> queue= new ArrayDeque<String>();
+        queue.add(start);
+        
+		map = new HashMap<String,List<String>>();
+		
+		Map<String,Integer> ladder = new HashMap<String,Integer>();
+		for (String string:dict)
+		    ladder.put(string, Integer.MAX_VALUE);
+		ladder.put(start, 0);
+				
+		dict.add(end);
+		//BFS: Dijisktra search
+		while (!queue.isEmpty()) {
+		   
+			String word = queue.poll();
+			
+			int step = ladder.get(word)+1;//'step' indicates how many steps are needed to travel to one word. 
+			
+			if (step>min) break;
+			
+			for (int i = 0; i < word.length(); i++){
+			   StringBuilder builder = new StringBuilder(word); 
+				for (char ch='a';  ch <= 'z'; ch++){
+					builder.setCharAt(i,ch);
+					String new_word=builder.toString();				
+					if (ladder.containsKey(new_word)) {
+							
+					    if (step>ladder.get(new_word))//Check if it is the shortest path to one word.
+					    	continue;
+					    else if (step<ladder.get(new_word)){
+					    	queue.add(new_word);
+					    	ladder.put(new_word, step);
+					    }else;// It is a KEY line. If one word already appeared in one ladder,
+					          // Do not insert the same word inside the queue twice. Otherwise it gets TLE.
+					    
+					    if (map.containsKey(new_word)) //Build adjacent Graph
+					    	map.get(new_word).add(word);
+					    else{
+					    	List<String> list= new LinkedList<String>();
+					    	list.add(word);
+					    	map.put(new_word,list);
+					    	//It is possible to write three lines in one:
+					    	//map.put(new_word,new LinkedList<String>(Arrays.asList(new String[]{word})));
+					    	//Which one is better?
+					    }
+					    
+					    if (new_word.equals(end))
+					    	min=step;
 
+					}//End if dict contains new_word
+				}//End:Iteration from 'a' to 'z'
+			}//End:Iteration from the first to the last
+		}//End While
+
+    	//BackTracking
+		LinkedList<String> result = new LinkedList<String>();
+		backTrace(end,start,result);
+
+		return results;        
+}
+private void backTrace(String word,String start,List<String> list){
+    	if (word.equals(start)){
+    		list.add(0,start);
+    		results.add(new ArrayList<String>(list));
+    		list.remove(0);
+    		return;
+    	}
+    	list.add(0,word);
+    	if (map.get(word)!=null)
+    		for (String s:map.get(word))
+    			backTrace(s,start,list);
+    	list.remove(0);
+}
 ```
-## 45 
+## 45 Median of Two Sorted Arrays
 #### _hard_
 #### 描述：
 #### 思路：
@@ -1202,7 +1330,7 @@ public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
 
 ```
 ## 46 
-#### _hard_
+#### _easy_
 #### 描述：
 #### 思路：
 #### 代码：
