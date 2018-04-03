@@ -1,4 +1,4 @@
-# Leetcode Part1 共55道
+# Leetcode Part2 共55道
 ## 56 
 #### _medium_
 #### 描述：
