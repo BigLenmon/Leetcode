@@ -1368,40 +1368,138 @@ B[0], B[1], ..., B[j-1]  |  B[j], B[j+1], ..., B[n-1]
 
             return (max_of_left + min_of_right) / 2.0
 ```
-## 46 
+## 46 House Robber
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组代表房子里面的钱。一个小偷在相连的房子中只能拿一家的钱，问小偷最多拿多少钱
+#### 思路：简单的动态规划，dp[i]=Math.max(dp[i-1],dp[i-1]+nums[i])。我之前有个错误就是dp[1]我初始化的时候是nums[1].但是实际上得Math.max(nums[1],nums[0]).
 #### 代码：
 ```
-
+    public int rob(int[] nums) {
+        if(nums.length == 0) return 0;
+        int[] dp = new int[nums.length];
+        for(int i = 0;i < nums.length;i++){
+            if(i == 0)
+                dp[i] = nums[i];
+            else if(i == 1)
+                dp[i] = Math.max(nums[i],dp[i-1]);
+            else
+                dp[i] = Math.max(nums[i]+dp[i-2],dp[i-1]);
+        }
+        return dp[nums.length-1];
+    }
 ```
-## 47 
+## 47 Best Time to Buy and Sell Stock
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：Best Time to Buy and Sell Stock2 的简易版本，只允许买卖一次
+#### 思路：和之前的思路一样
 #### 代码：
 ```
-
+public int maxProfit(int[] prices) {
+        int len = prices.length;
+        if(len == 0)
+            return 0;
+        int temp = -prices[0];
+        int res = 0;
+        for(int i = 1;i < len;i++){
+            temp = Math.max(temp,-prices[i]);
+            res = Math.max(res,prices[i]+temp);
+        }
+        return res;
+    }
 ```
-## 48 
+## 48 Maximum Subarray
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组，求数组中子串的最大和。
+#### 思路：以前一直的想到的是：遍历数组，一直相加。结果用一个变量存储（maxEndingHere），如果大于至今的最大结果就更新。如果变量小于零了，就将变量更新为0。solution2代码则是用的dp。solution1代码则结合了我之前的思想和dp。
+#### 代码：
+##### solution1
+```
+public static int maxSubArray(int[] A) {
+    int maxSoFar=A[0], maxEndingHere=A[0];
+    for (int i=1;i<A.length;++i){
+    	maxEndingHere= Math.max(maxEndingHere+A[i],A[i]);
+    	maxSoFar=Math.max(maxSoFar, maxEndingHere);	
+    }
+    return maxSoFar;
+}
+```
+##### solution2
+```
+public int maxSubArray(int[] A) {
+        int n = A.length;
+        int[] dp = new int[n];//dp[i] means the maximum subarray ending with A[i];
+        dp[0] = A[0];
+        int max = dp[0];
+        
+        for(int i = 1; i < n; i++){
+            dp[i] = A[i] + (dp[i - 1] > 0 ? dp[i - 1] : 0);
+            max = Math.max(max, dp[i]);
+        }
+        
+        return max;
+}
+```
+## 49 Climbing Stairs
+#### _easy_
+#### 描述：给定一个n阶的楼梯，你从第零阶开始，每次能走一步或者两步，问到达终点时有多少种走法
+#### 思路：简单的dp:dp[i]=dp[i-1]+dp[i-2]。（斐波那契数列）
 #### 代码：
 ```
-
-```
-## 49 
-#### _easy_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
+public int climbStairs(int n) {
+        if(n == 0) return 0;
+        if(n <= 2) return n==2 ?  2: 1;
+        int t1 = 1;
+        int t2 = 2;
+        for(int i = 3;i <= n;i++){
+            int temp = t1 + t2;
+            t1 = t2;
+            t2 = temp;
+        }
+        return t2;
+    }
 ```
 ## 50 
-#### _easy_
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 51 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 52 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 53 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 54 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 55 
+#### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
