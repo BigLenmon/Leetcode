@@ -1,4 +1,4 @@
-# Leetcode 共55道
+# Leetcode Part1 共55道
 ## 1 plusOne
 ### _easy_
 #### 描述：用一组数据表示一个整数，实现整数加一的操作
@@ -798,7 +798,7 @@ int findPeakElement(const vector<int> &num)
 ## 30 Unique Paths
 #### _medium_
 #### 描述：给定一个二维数组，一个机器人从左上角开始，每次只能往下或者往右。问到右下角共有多少不同的路径
-#### 思路：简单的动态规划，dp[i[[j] = d[i-1][j]+dp[i-1][j-1];
+#### 思路：简单的动态规划，dp[i[[j] = d[i-1][j]+dp[i][j-1];
 #### 代码：
 ```
 public int uniquePaths(int m, int n) {
