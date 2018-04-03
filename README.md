@@ -1,4 +1,4 @@
-# Leetcode 共50道
+# Leetcode 共55道
 ## 1 plusOne
 ### _easy_
 #### 描述：用一组数据表示一个整数，实现整数加一的操作
@@ -1458,51 +1458,153 @@ public int climbStairs(int n) {
         return t2;
     }
 ```
-## 50 
+## 50 Unique Binary Search Trees II
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定目标值n,问从1到n可以组成多少种不同的二分查找数
+#### 思路：我一开始看错题了，以为要返回的是多少种。不过思路也差不多，就新增一个数n后，数列变成了1,2,3...n。可以这样想，如果以i为根节点，1到i-1为左子树dp[i-1]，i+1到n为右子树dp[n-i-1],这样以i为根节点的总数为dp[i-1] * dp[n-i-1]。再依次将i从0到n。就求得了新加一个数n总类别了。
 #### 代码：
 ```
+public static List<TreeNode> generateTrees(int n) {
+    List<TreeNode>[] result = new List[n + 1];
+    result[0] = new ArrayList<TreeNode>();
+    if (n == 0) {
+        return result[0];
+    }
 
+    result[0].add(null);
+    for (int len = 1; len <= n; len++) {
+        result[len] = new ArrayList<TreeNode>();
+        for (int j = 0; j < len; j++) {
+            for (TreeNode nodeL : result[j]) {
+                for (TreeNode nodeR : result[len - j - 1]) {
+                    TreeNode node = new TreeNode(j + 1);
+                    node.left = nodeL;
+                    node.right = clone(nodeR, j + 1);
+                    result[len].add(node);
+                }
+            }
+        }
+    }
+    return result[n];
+}
+
+private static TreeNode clone(TreeNode n, int offset) {
+    if (n == null) {
+        return null;
+    }
+    TreeNode node = new TreeNode(n.val + offset);
+    node.left = clone(n.left, offset);
+    node.right = clone(n.right, offset);
+    return node;
+}
 ```
-## 51 
+## 51 Triangle
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给一个类似杨辉三角的三角形（数值不同，形状相同），求从头到尾的最小值
+#### 思路：简单dp:dp[i] = Min(dp[i+1],dp[i]）+nums[i]。下面代码写的简洁
 #### 代码：
 ```
-
+int minimumTotal(vector<vector<int> > &triangle) {
+    int n = triangle.size();
+    vector<int> minlen(triangle.back());
+    for (int layer = n-2; layer >= 0; layer--) // For each layer
+    {
+        for (int i = 0; i <= layer; i++) // Check its every 'node'
+        {
+            // Find the lesser of its two children, and sum the current value in the triangle with it.
+            minlen[i] = min(minlen[i], minlen[i+1]) + triangle[layer][i]; 
+        }
+    }
+    return minlen[0];
+}
 ```
-## 52 
+## 52 House Robber II
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：和之前的偷盗题一样，都是偷盗的房间不能相连，但是这一题的是1~n组成了一个圈，问小偷的最大收益
+#### 思路：将圈分成两个情况0~n-2和1~n-1，比较两种的最大收益
 #### 代码：
 ```
+public int rob(int[] nums) {
+    if (nums.length == 1) return nums[0];
+    return Math.max(rob(nums, 0, nums.length - 2), rob(nums, 1, nums.length - 1));
+}
 
+    private int rob(int[] num, int lo, int hi) {
+    int include = 0, exclude = 0;
+    for (int j = lo; j <= hi; j++) {
+        int i = include, e = exclude;
+        include = e + num[j];
+        exclude = Math.max(e, i);
+    }
+    return Math.max(include, exclude);
+}
 ```
-## 53 
+## 53 Ugly Number II
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：ugly number:因子有2,3,5组成的数。问第n个ugly number是那个数
+#### 思路：下面代码的思路是最新的丑数一定是有之前的丑数乘上（2,3,5）得来的，那么假设最新的数n,我们用t1表示，dp[t1]* 2<n<dp[t1+1]* 2,dp[t2]* 3<n<dp[t2+1]* 3,dp[t3]* 5<n<dp[t3+1]* 5。那么最新的一个丑数一定是dp[t1+1]* 2,dp[t2+1]* 3,dp[t3+1]* 5之间的最小的一个数。我的思路则是用了一个hashset存储之前的丑数，遍历全部整数，如果整数n除以二，或者除以三，除以五的值在hashset里，那么就是新的丑数了。
 #### 代码：
 ```
-
+public int nthUglyNumber(int n) {
+        int[] dp = new int[n];
+        int t2= 0,t3 = 0,t5 = 0;
+        dp[0] = 1;
+        for(int i = 1;i < n;i++){
+            dp[i] = Math.min(dp[t2] * 2,Math.min(dp[t3]*3,dp[t5]*5));
+            if(dp[i] == dp[t2] * 2) t2++;
+            if(dp[i] == dp[t3] * 3) t3++;
+            if(dp[i] == dp[t5] * 5) t5++;
+        }
+        return dp[n-1];
+    }
 ```
-## 54 
+## 54 Perfect Squares
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个整数n,n能有乘方数（i * i）相加得到。问n最少能被多少个乘方数组成。
+#### 思路：完全背包的变种，背包重量是n,物品有重量有（1,4,9...），价值都是一，求最小价值。
 #### 代码：
 ```
-
+public int numSquares(int n) {
+        int[] dp = new int[n+1];
+        for(int i = 1;i <= n;i++){
+            dp[i] = Integer.MAX_VALUE;
+            for(int j = 1;j *j <= i;j++){
+                dp[i] = Math.min(dp[i],dp[i-j*j]+1);
+            }
+        }
+        return dp[n];
+    }
 ```
-## 55 
+## 55 Longest Increasing Subsequence
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组，问该数组的最长递增子数组的长度是多少，子数组元素之间的前后位置和在原数组的位置保持不变。
+For example,
+Given [10, 9, 2, 5, 3, 7, 101, 18],
+The longest increasing subsequence is [2, 3, 7, 101], therefore the length is 4. Note that there may be more than one LIS combination, it is only necessary for you to return the length. 
+#### 思路：设立一个数组tail，tail[i]表示将原数组划分成长度为i+1的递增子数组，其中所以子数组最后元素中的最小的元素就是tail[i]。
+For example, say we have nums = [4,5,6,3], then all the available increasing subsequences are:
+
+len = 1   :      [4], [5], [6], [3]   => tails[0] = 3
+len = 2   :      [4, 5], [5, 6]       => tails[1] = 5
+len = 3   :      [4, 5, 6]            => tails[2] = 6
+由此我们可以得到tail是递增的，并且如果新增一个数x，这个数大于所有的tail,tail可以把长度加一，最后一个复制为x。如果tail[i-1] < x <= tail[i]，我们就更新tail[i-1] = x。按所有的元素遍历，最后tail的长度就是最长递增子数组。可以看看下面代码，简洁的不行。
 #### 代码：
 ```
-
+public int lengthOfLIS(int[] nums) {
+    int[] tails = new int[nums.length];
+    int size = 0;
+    for (int x : nums) {
+        int i = 0, j = size;
+        while (i != j) {
+            int m = (i + j) / 2;
+            if (tails[m] < x)
+                i = m + 1;
+            else
+                j = m;
+        }
+        tails[i] = x;
+        if (i == size) ++size;
+    }
+    return size;
+}
 ```
