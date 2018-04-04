@@ -100,13 +100,31 @@ int longestValidParentheses(string s) {
         return curMax;
     }
 ```
-## 60 
+## 60 Edit Distance
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定两个字符串是s1,s2。问他们的编辑距离是多少（编辑距离为：s1每次可以选择插入，删除，修改任意字符.多少步后能和s2相同）
+#### 思路：对于s1的第i位，s2的第j位。如果他们相同，则dp[i][j] = dp[i-1][j-1]。如果不相同则dp[i][j]为dp[i-1][j]和dp[i][j-1]，dp[i-1[j-1]中选择最小的，并且加上一。PS:一开始以为特别难，但是如果仔细想想其实也没有那么难，可以说简单，看来dp题得确立状态变化。
 #### 代码：
 ```
-
+public int minDistance(String word1, String word2) {
+        int len1 = word1.length();
+        int len2 = word2.length();
+        int[][] dp = new int[len1+1][len2+1];
+        for(int i = 0;i<=len1;i++) dp[i][0] = i;
+        for(int j = 1;j<=len2;j++) dp[0][j] = j;
+        dp[0][0] = 0;
+        for(int i = 0;i < len1;i++){
+            for(int j = 0;j <len2;j++){
+                if(word1.charAt(i) == word2.charAt(j))
+                    dp[i+1][j+1] = dp[i][j];
+                else{
+                    int temp = Math.min(dp[i+1][j],dp[i][j+1]);
+                    dp[i+1][j+1] = Math.min(temp,dp[i][j]) + 1;
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
 ```
 ## 61 
 #### _hard_
