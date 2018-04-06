@@ -126,13 +126,45 @@ public int minDistance(String word1, String word2) {
         return dp[len1][len2];
     }
 ```
-## 61 
+## 61 Scramble String
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一个字符串，将该字符串用二叉树表示。改变二叉树中某个结点的左右子树位置。得到一个新的字符串。新的字符串和之前的字符串之间就是srcamble的.问给两个字符串，问他们是否是scramble。
+例如以下两个字符串就是scramble的
+    great               
+   /    \
+  rg    eat
+ / \    /  \
+r   g  e   at
+           / \
+          a   t
+     rgeat
+    /    \
+  gr    eat
+ / \    /  \
+g   r  e   at
+           / \
+          a   t
+#### 思路：有两种方法，递归和dp。递归就是将字符串一分为二:s1（0，i,len）。如果(isScramble(s1.substring(0,i), s2.substring(0,i)) && isScramble(s1.substring(i), s2.substring(i)))存在，或者(isScramble(s1.substring(0,i), s2.substring(s2.length()-i))  && isScramble(s1.substring(i), s2.substring(0,s2.length()-i)))存在。那么s1和s2是scramble。dp思路也类似；用三维数组dp[i][j][k]来存储值。i表示s1的起始位置,j表示s2的起始位置。k表示长度。dp[i][j][k]表示s1.substring(i,i+k-1)和s2.substring(j,j+k-1)是scramble。这样dp[i][j][len] = || (dp[i][j][k]&&dp[i+k][j+k][len-k] || dp[i][j+len-k][k]&&dp[i+k][j][len-k]) 对于所有1<=k<len，也就是对于所有len-1种劈法的结果求或运算，时间复杂度O(n^4)。下面代码是递归的方法表示。有一些小技巧来提前判断是不是scramble的。
 #### 代码：
 ```
-
+public boolean isScramble(String s1, String s2) {
+        if (s1.equals(s2)) return true; 
+        
+        int[] letters = new int[26];
+        for (int i=0; i<s1.length(); i++) {
+            letters[s1.charAt(i)-'a']++;
+            letters[s2.charAt(i)-'a']--;
+        }
+        for (int i=0; i<26; i++) if (letters[i]!=0) return false;
+    
+        for (int i=1; i<s1.length(); i++) {
+            if (isScramble(s1.substring(0,i), s2.substring(0,i)) 
+             && isScramble(s1.substring(i), s2.substring(i))) return true;
+            if (isScramble(s1.substring(0,i), s2.substring(s2.length()-i)) 
+             && isScramble(s1.substring(i), s2.substring(0,s2.length()-i))) return true;
+        }
+        return false;
+    }
 ```
 ## 62 
 #### _hard_
