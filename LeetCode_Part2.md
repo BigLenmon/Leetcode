@@ -144,7 +144,7 @@ r   g  e   at
 g   r  e   at
            / \
           a   t
-#### 思路：有两种方法，递归和dp。递归就是将字符串一分为二:s1（0，i,len）。如果(isScramble(s1.substring(0,i), s2.substring(0,i)) && isScramble(s1.substring(i), s2.substring(i)))存在，或者(isScramble(s1.substring(0,i), s2.substring(s2.length()-i))  && isScramble(s1.substring(i), s2.substring(0,s2.length()-i)))存在。那么s1和s2是scramble。dp思路也类似；用三维数组dp[i][j][k]来存储值。i表示s1的起始位置,j表示s2的起始位置。k表示长度。dp[i][j][k]表示s1.substring(i,i+k-1)和s2.substring(j,j+k-1)是scramble。这样dp[i][j][len] = || (dp[i][j][k]&&dp[i+k][j+k][len-k] || dp[i][j+len-k][k]&&dp[i+k][j][len-k]) 对于所有1<=k<len，也就是对于所有len-1种劈法的结果求或运算，时间复杂度O(n^4)。下面代码是递归的方法表示。有一些小技巧来提前判断是不是scramble的。
+#### 思路：有两种方法，递归和dp。递归就是将字符串一分为二:s1（0，i,len）。如果(isScramble(s1.substring(0,i), s2.substring(0,i)) && isScramble(s1.substring(i), s2.substring(i)))存在，或者(isScramble(s1.substring(0,i), s2.substring(s2.length()-i))  && isScramble(s1.substring(i), s2.substring(0,s2.length()-i)))存在。那么s1和s2是scramble。dp思路也类似；用三维数组dp[i][j][k]来存储值。i表示s1的起始位置,j表示s2的起始位置。k表示长度。dp[i][j][k]表示s1.substring(i,i+k-1)和s2.substring(j,j+k-1)是scramble。这样dp[i][j][len] = || (dp[i][j][k]&&dp[i+k][j+k][len-k] || dp[i][j+len-k][k]&&dp[i+k][j][len-k]) 对于所有1<=k<len，也就是对于所有len-1种劈法的结果求或运算，时间复杂度O(n^4),一般而言，字符串问题一般可以用dp来解决。下面代码是递归的方法表示。有一些小技巧来提前判断是不是scramble的。
 #### 代码：
 ```
 public boolean isScramble(String s1, String s2) {
@@ -166,7 +166,107 @@ public boolean isScramble(String s1, String s2) {
         return false;
     }
 ```
-## 62 
+## 62 Interleaving String
+#### _hard_
+#### 描述：给定字符串 s1,s2,s3。问是s3是否有s1,s2组成
+For example,
+Given:
+s1 = "aabcc",
+s2 = "dbbca",
+
+When s3 = "aadbbcbcac", return true.
+When s3 = "aadbbbaccc", return false. 
+#### 思路：用dp，建立一个二维数组搭配dp[i][j]表示s1的第i位和s2的第j位和s3的第i+j位interleaving。递推公式dp[i][j] = (dp[i-1][j] && s1.charAt(i-1) == s3.charAt(i + j - 1)) ||(dp[i][j-1] && s2.charAt(j-1) == s3.charAt(i + j - 1));我之前用dp是用的三维数组，最后一维存放的是s3的长度，后来发现可以用i和j来计算。这个题有个误区就是，以为可以像归并排序一样来组成s3.如果s1和s2字符都不一样就可以，一旦有相同的字符，那么就不知道选择哪个字符串的值了。所以也可以用递归来做。
+#### 代码：
+```
+public boolean isInterleave(String s1, String s2, String s3) {
+        int len1 = s1.length();
+        int len2 = s2.length();
+        int len3 = s3.length();
+        if(len1 + len2 != len3) return false;
+        boolean[][] dp = new boolean[len1+1][len2+1];
+        for(int i = 0;i <= len1;i++){
+            for(int j = 0;j <= len2; j++){
+                if(i == 0 && j == 0)
+                    dp[i][j] = true;
+                else if (i == 0)
+                    dp[0][j] = dp[0][j-1] && s2.charAt(j-1) == s3.charAt(j-1);
+                else if (j == 0)
+                    dp[i][0] = dp[i-1][0] && s1.charAt(i-1) == s3.charAt(i-1);
+                else
+                    dp[i][j] = (dp[i-1][j] && s1.charAt(i-1) == s3.charAt(i + j - 1)) ||
+                               (dp[i][j-1] && s2.charAt(j-1) == s3.charAt(i + j - 1));
+            }
+        }
+        return dp[len1][len2];
+    }
+```
+## 63 Distinct Subsequences
+#### _hard_
+#### 描述：给定字符串s和T，问s有多少个子串等于T。
+#### 思路：利用dp,dp【i】[j]代表s的第i位置和T第j位置不同子串有多少。递推公式为dp[i][j] = dp[i-1][j] + dp[i-1][j-1]（如果s.charAt(i-1) == t.charAt(j-1)）。当然也可以用溯源方法来做。这次的dp方法让我没有想到这样的问题也可以用dp来做，并且递推公式刷新了我对dp的理解。我以前一直以为是dp只能将之前的一个状态转换成新的一个状态。但是这题中是将之前的两个状态合成新的一个状态（其实之前也有，但是那种合并都比较简单容易理解，像这题就不好理解了。感觉是经典dp题了。）
+#### 代码：
+```
+    public int numDistinct(String s, String t) {
+        int slen = s.length();
+        int tlen = t.length();
+        int[][] dp = new int[slen + 1][tlen + 1];
+        for(int i = 0;i <= slen;i++) dp[i][0] = 1;
+        for(int j = 1;j <= tlen;j++) dp[0][j] = 0;
+        for(int i = 1;i <= slen;i++){
+            for(int j = 1;j <= tlen;j++){
+                if(s.charAt(i-1) == t.charAt(j-1))
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j-1];
+                else
+                    dp[i][j] = dp[i-1][j];
+            }
+        }
+        return dp[slen][tlen];
+    }
+```
+## 64 Palindrome Partitioning II
+#### _hard_
+#### 描述：给定一个字符串，问该字符串的回文子串最少有多少
+#### 思路：两种解法，一种是dp，一种是类似暴力的解法。首先说dp，设两个数组，数组cut[i]表示在前i个字符最多有回文子串。pal[i][j]表示从i到j的字符是回文的。递推思想是：如果s[i+1]==s[j+1]且pal[i][j]是回文的，那么pal[i+1][j+1]也是回文的。同时cut[j]=cut[i]+1（这种情况是最小的）。所以我们遍历i和j。从而得到结果（代码solution1）。第二种有点类似于暴力。首先设置cut[i] = i-1,这种是最大情况，然后遍历数组，假设i为回文子串的中间，看该回文子串长度最大是多少，有点类似于57题的求最大回文子串长度的方法，同时更新cut，最后得到结果。
+#### 代码：
+#### solution 1
+```
+public int minCut(String s) {
+    char[] c = s.toCharArray();
+    int n = c.length;
+    int[] cut = new int[n];
+    boolean[][] pal = new boolean[n][n];
+    
+    for(int i = 0; i < n; i++) {
+        int min = i;
+        for(int j = 0; j <= i; j++) {
+            if(c[j] == c[i] && (j + 1 > i - 1 || pal[j + 1][i - 1])) {
+                pal[j][i] = true;  
+                min = j == 0 ? 0 : Math.min(min, cut[j - 1] + 1);
+            }
+        }
+        cut[i] = min;
+    }
+    return cut[n - 1];
+}
+```
+#### solution 2
+```
+int minCut(string s) {
+        int n = s.size();
+        vector<int> cut(n+1, 0);  // number of cuts for the first k characters
+        for (int i = 0; i <= n; i++) cut[i] = i-1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; i-j >= 0 && i+j < n && s[i-j]==s[i+j] ; j++) // odd length palindrome
+                cut[i+j+1] = min(cut[i+j+1],1+cut[i-j]);
+
+            for (int j = 1; i-j+1 >= 0 && i+j < n && s[i-j+1] == s[i+j]; j++) // even length palindrome
+                cut[i+j+1] = min(cut[i+j+1],1+cut[i-j+1]);
+        }
+        return cut[n];
+    }
+```
+## 65 
 #### _hard_
 #### 描述：
 #### 思路：
@@ -174,7 +274,7 @@ public boolean isScramble(String s1, String s2) {
 ```
 
 ```
-## 63 
+## 66 
 #### _hard_
 #### 描述：
 #### 思路：
@@ -182,7 +282,31 @@ public boolean isScramble(String s1, String s2) {
 ```
 
 ```
-## 64 
+## 67 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 68 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 69 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 70 
 #### _hard_
 #### 描述：
 #### 思路：
