@@ -266,13 +266,28 @@ int minCut(string s) {
         return cut[n];
     }
 ```
-## 65 
+## 65 Dungeon Game
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一个二维数组，代表一个矩阵。矩阵上的每个值代表可以增减生命值（负数就是减去生命值）。问一个勇士在左上角，公主在右下角。勇士初始生命值最少多少才能解救公主。
+#### 思路：利用dp。从右下角到左上角，我们用dp[i][j]代表所需要的最小生命值。dp[i][j]从下方和右边过来，让dp[i+1][j]和dp[i][j+1]分别与num[i][j]相减，他们的最小值如果小于零就代表生命值足够，就更新dp[i][j]为1.就这样推到左上角。这道题如果从左上角到右下角的推，那么就需要两个矩阵，一个存当前生命，一个存当前所需的最小生命值。
 #### 代码：
 ```
-
+int calculateMinimumHP(vector<vector<int>>& dungeon) {
+        int M = dungeon.size();
+        int N = dungeon[0].size();
+        // hp[i][j] represents the min hp needed at position (i, j)
+        // Add dummy row and column at bottom and right side
+        vector<vector<int> > hp(M + 1, vector<int>(N + 1, INT_MAX));
+        hp[M][N - 1] = 1;
+        hp[M - 1][N] = 1;
+        for (int i = M - 1; i >= 0; i--) {
+            for (int j = N - 1; j >= 0; j--) {
+                int need = min(hp[i + 1][j], hp[i][j + 1]) - dungeon[i][j];
+                hp[i][j] = need <= 0 ? 1 : need;
+            }
+        }
+        return hp[0][0];
+    }
 ```
 ## 66 
 #### _hard_
