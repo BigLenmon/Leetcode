@@ -289,40 +289,206 @@ int calculateMinimumHP(vector<vector<int>>& dungeon) {
         return hp[0][0];
     }
 ```
-## 66 
+## 66 Best Time to Buy and Sell Stock IV
 #### _hard_
-#### 描述：
+#### 描述：还是买卖股票，这次限定k次，问最大利润
+#### 思路：首先判断k是否大于长度的一半，大于长度的一半就表明相当于可以无限次的买卖。如果不大于，就是之前的问题了。之前买卖两次的时候用了那个方法。
+#### 代码：
+```
+public int maxProfit(int k, int[] prices) {
+	 int plen = prices.length;
+        if(plen < 2) return 0;
+        if(k >= plen / 2){
+            int ans = 0;
+            for(int i = 1;i < plen;i++){
+                if(prices[i] - prices[i-1] > 0)
+                    ans += (prices[i] - prices[i-1]);
+            }
+            return ans;
+        }
+        int[][] dp = new int[k+1][plen];
+        for(int i = 1;i <= k;i++){
+            int tmpMax = -prices[0];
+            for(int j = 1;j < plen;j++){
+                dp[i][j] = Math.max(prices[j]+tmpMax,dp[i][j-1]);
+                tmpMax = Math.max(tmpMax,dp[i-1][j]-prices[j]);
+            }
+        }
+        return dp[k][plen-1];
+}
+```
+## 67 Regular Expression Matching
+#### _hard_
+#### 描述：模式匹配，‘.’表示可以匹配任意字符，‘ * ’表示可以有任意个字符（包括零个）
+#### 思路：dp，从后往前。如果当前字符和匹配串相等或匹配串为‘.’。dp[i][j] = dp[i][j+2] || firstMatch && dp[i+1][j]。溯源法应该也可以做。
+#### 代码：
+```
+public boolean isMatch(String s, String p) {
+        boolean[][] dp = new boolean[s.length()+1][p.length()+1];
+        dp[s.length()][p.length()] = true;
+        for(int i = s.length();i >=0;i--){
+            for(int j = p.length()-1;j>= 0;j--){
+                boolean firstMatch = (i < s.length() && (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.'));
+                if(j + 1 < p.length() && p.charAt(j+1) == '*')
+                    dp[i][j] = dp[i][j+2] || firstMatch && dp[i+1][j];
+                else
+                    dp[i][j] = firstMatch && dp[i+1][j+1];
+            }
+        }
+        return dp[0][0];
+    }
+```
+## 68 Word Break II
+#### _hard_
+#### 描述：给一个字符串s和一个字符串集合list，问list抽取元素组成s，问有多少种组成方法
+ For example, given
+s = "catsanddog",
+dict = ["cat", "cats", "and", "sand", "dog"].
+
+A solution is ["cats and dog", "cat sand dog"]. 
 #### 思路：
 #### 代码：
 ```
-
+HashMap<String,List<String>> map = new HashMap<String,List<String>>();
+    public List<String> wordBreak(String s, Set<String> wordDict) {
+        List<String> res = new ArrayList<String>();
+        if(s == null || s.length() == 0) {
+            return res;
+        }
+        if(map.containsKey(s)) {
+            return map.get(s);
+        }
+        if(wordDict.contains(s)) {
+            res.add(s);
+        }
+        for(int i = 1 ; i < s.length() ; i++) {
+            String t = s.substring(i);
+            if(wordDict.contains(t)) {
+                List<String> temp = wordBreak(s.substring(0 , i) , wordDict);
+                if(temp.size() != 0) {
+                    for(int j = 0 ; j < temp.size() ; j++) {
+                        res.add(temp.get(j) + " " + t);
+                    }
+                }
+            }
+        }
+        map.put(s , res);
+        return res;
+    }
 ```
-## 67 
-#### _hard_
-#### 描述：
-#### 思路：
+## 69 Valid Palindrome
+#### _easy_
+#### 描述：给定一个字符串，看看是否符合回文子串，符号。
+#### 思路：简单的匹配回文串的问题
 #### 代码：
 ```
-
-```
-## 68 
-#### _hard_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
-```
-## 69 
-#### _hard_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
+    public boolean isPalindrome(String s) {
+        if (s.isEmpty()) {
+        	return true;
+        }
+        int head = 0, tail = s.length() - 1;
+        char cHead, cTail;
+        while(head <= tail) {
+        	cHead = s.charAt(head);
+        	cTail = s.charAt(tail);
+        	if (!Character.isLetterOrDigit(cHead)) {
+        		head++;
+        	} else if(!Character.isLetterOrDigit(cTail)) {
+        		tail--;
+        	} else {
+        		if (Character.toLowerCase(cHead) != Character.toLowerCase(cTail)) {
+        			return false;
+        		}
+        		head++;
+        		tail--;
+        	}
+        }
+        
+        return true;
+    }
 ```
 ## 70 
-#### _hard_
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 71 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 72 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 73 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 74 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 75 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 76 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 77 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 78 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 79 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 80 
+#### _easy_
 #### 描述：
 #### 思路：
 #### 代码：
