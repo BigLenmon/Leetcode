@@ -513,24 +513,64 @@ public int lengthOfLastWord(String s) {
         return sb.reverse().toString();
     }
 ```
-## 74 
-#### _easy_
-#### 描述：
-#### 思路：
+## 74 ZigZag Conversion
+#### _medium_
+#### 描述：给定一个字符串s,讲s按照z字型排列，问输出结果是多少？
+for example：
+s = "PAYPALISHIRING"
+P   A   H   N
+A P L S I I G
+Y   I   R
+返回 "PAHNAPLSIIGYIR"
+convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR". 
+#### 思路：创建一个n行的字符串数组，按照z字依次每行给字符串加上字符，最后组装成一行。这题不能用先求第一行再求第二行的方法来，会很麻烦。
 #### 代码：
 ```
-
+public String convert(String s, int numRows) {
+        char[] c = s.toCharArray();
+        int len = c.length;
+        StringBuffer[] sb = new StringBuffer[numRows];
+        for (int i = 0; i < sb.length; i++) sb[i] = new StringBuffer();
+    
+        int i = 0;
+        while (i < len) {
+            for (int idx = 0; idx < numRows && i < len; idx++) // vertically down
+                sb[idx].append(c[i++]);
+            for (int idx = numRows-2; idx >= 1 && i < len; idx--) // obliquely up
+                sb[idx].append(c[i++]);
+        }
+        for (int idx = 1; idx < sb.length; idx++)
+            sb[0].append(sb[idx]);
+        return sb[0].toString();
+    }
 ```
-## 75 
-#### _easy_
-#### 描述：
-#### 思路：
+## 75 String to Integer (atoi)
+#### _medium_
+#### 描述：给定一个字符串，返回对应的整数
+#### 思路：主要考虑到字符串为空，有非法字符，正负号，溢出这几种情况
 #### 代码：
 ```
-
+int flag = 0;
+int atoi(String str) {
+    if(str == null){ flag = 1; return 0;}
+    int sign = 1, base = 0, i = 0;
+    while (str[i] == ' ') { i++; }
+    if (str[i] == '-' || str[i] == '+') {
+        sign = 1 - 2 * (str[i++] == '-'); 
+    }
+    while (str[i] >= '0' && str[i] <= '9') {
+        if (base >  INT_MAX / 10 || (base == INT_MAX / 10 && str[i] - '0' > 7)) {
+            if (sign == 1) return INT_MAX;
+            else return INT_MIN;
+        }
+        base  = 10 * base + (str[i++] - '0');
+    }
+    if(i < str.length -1) flag = -1;
+    return base * sign;
+}
 ```
 ## 76 
-#### _easy_
+#### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
@@ -538,7 +578,7 @@ public int lengthOfLastWord(String s) {
 
 ```
 ## 77 
-#### _easy_
+#### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
@@ -546,7 +586,7 @@ public int lengthOfLastWord(String s) {
 
 ```
 ## 78 
-#### _easy_
+#### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
@@ -554,7 +594,7 @@ public int lengthOfLastWord(String s) {
 
 ```
 ## 79 
-#### _easy_
+#### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
@@ -562,7 +602,7 @@ public int lengthOfLastWord(String s) {
 
 ```
 ## 80 
-#### _easy_
+#### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
