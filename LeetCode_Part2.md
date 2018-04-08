@@ -407,37 +407,111 @@ HashMap<String,List<String>> map = new HashMap<String,List<String>>();
         return true;
     }
 ```
-## 70 
+## 70 Valid Parentheses
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：给定一个有"{","}","(",")","[","]"组成的字符串，问该字符串是否符合括号的规范
+#### 思路：看代码吧，太简单。
 #### 代码：
 ```
-
+public boolean isValid(String s) {
+	Stack<Character> stack = new Stack<Character>();
+	for (char c : s.toCharArray()) {
+		if (c == '(')
+			stack.push(')');
+		else if (c == '{')
+			stack.push('}');
+		else if (c == '[')
+			stack.push(']');
+		else if (stack.isEmpty() || stack.pop() != c)
+			return false;
+	}
+	return stack.isEmpty();
+}
 ```
-## 71 
+## 71 Implement strStr()
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：给定两个字符串 S ，P。问p是否是s的子串，如果是返回s的位置，不是则返回1
+#### 思路：kmp算法。（可算是写出来了==;）
 #### 代码：
 ```
-
+    int[] next;
+    public int strStr(String haystack, String needle) {
+        next = new int[needle.length()];
+        if(needle.length() == 0)
+            return 0;
+        getnext(needle);
+        int j = 0;
+        int i = 0;
+        while(i < haystack.length() && j < needle.length()){
+            if(j == -1 || needle.charAt(j) == haystack.charAt(i)){
+                i++;
+                j++;
+            }
+            else
+                j = next[j];
+        }
+        if(j == needle.length())
+            return i-j;
+        else
+            return -1;
+    }
+    public void getnext(String p){
+        next[0] = -1;
+        int j = -1;
+        int i = 0;
+        while(i < p.length()-1){
+            if(j== -1 || p.charAt(i) == p.charAt(j)){
+                i++;
+                j++;
+                next[i] = j;
+            }
+            else
+                j = next[j];
+        }
+    }
 ```
-## 72 
+## 72 Length of Last Word
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：给定一个字符串，里面用空格隔开各个单词，返回最后一个单词的长度
+#### 思路：要考虑到多个空格和最后一个是空格的问题。
 #### 代码：
 ```
-
+public int lengthOfLastWord(String s) {
+        int res = 0;
+        int pre = 0;
+        for(int i = 0;i < s.length();i++){
+            if(s.charAt(i) == ' '){
+                pre = res == 0 ? pre :res;
+                res = 0;
+            }
+            else
+                res ++;
+        }
+        if(s.length() > 0 && s.charAt(s.length()-1) == ' ')
+            return pre;
+        else 
+            return res;
+    }
 ```
-## 73 
+## 73 Add Binary
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：求两个二进制的加法
+#### 思路：看代码。我的算法是先加，之后算进位，但是不知道哪里错了
 #### 代码：
 ```
-
+ public String addBinary(String a, String b) {
+        StringBuilder sb = new StringBuilder();
+        int i = a.length() - 1, j = b.length() -1, carry = 0;
+        while (i >= 0 || j >= 0) {
+            int sum = carry;
+            if (j >= 0) sum += b.charAt(j--) - '0';
+            if (i >= 0) sum += a.charAt(i--) - '0';
+            sb.append(sum % 2);
+            carry = sum / 2;
+        }
+        if (carry != 0) sb.append(carry);
+        return sb.reverse().toString();
+    }
 ```
 ## 74 
 #### _easy_
