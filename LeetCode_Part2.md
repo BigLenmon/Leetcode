@@ -550,58 +550,151 @@ public String convert(String s, int numRows) {
 #### 思路：主要考虑到字符串为空，有非法字符，正负号，溢出这几种情况
 #### 代码：
 ```
-int flag = 0;
-int atoi(String str) {
-    if(str == null){ flag = 1; return 0;}
-    int sign = 1, base = 0, i = 0;
-    while (str[i] == ' ') { i++; }
-    if (str[i] == '-' || str[i] == '+') {
-        sign = 1 - 2 * (str[i++] == '-'); 
+public int myAtoi(String str) {
+    int index = 0, sign = 1, total = 0;
+    //1. Empty string
+    if(str.length() == 0) return 0;
+
+    //2. Remove Spaces
+    while(str.charAt(index) == ' ' && index < str.length())
+        index ++;
+
+    //3. Handle signs
+    if(str.charAt(index) == '+' || str.charAt(index) == '-'){
+        sign = str.charAt(index) == '+' ? 1 : -1;
+        index ++;
     }
-    while (str[i] >= '0' && str[i] <= '9') {
-        if (base >  INT_MAX / 10 || (base == INT_MAX / 10 && str[i] - '0' > 7)) {
-            if (sign == 1) return INT_MAX;
-            else return INT_MIN;
-        }
-        base  = 10 * base + (str[i++] - '0');
+    
+    //4. Convert number and avoid overflow
+    while(index < str.length()){
+        int digit = str.charAt(index) - '0';
+        if(digit < 0 || digit > 9) break;
+
+        //check if total will be overflow after 10 times and add digit
+        if(Integer.MAX_VALUE/10 < total || Integer.MAX_VALUE/10 == total && Integer.MAX_VALUE %10 < digit)
+            return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+
+        total = 10 * total + digit;
+        index ++;
     }
-    if(i < str.length -1) flag = -1;
-    return base * sign;
+    return total * sign;
 }
 ```
-## 76 
+## 76 Restore IP Addresses
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个字符串，返回可能的ip地址集合
+For example:
+Given "25525511135",
+return ["255.255.11.135", "255.255.111.35"]. (Order does not matter) 
+#### 思路：溯源法可以做，或者直接三次for循环
 #### 代码：
 ```
+public List<String> restoreIpAddresses(String s) {
+    List<String> solutions = new ArrayList<String>();
+    restoreIp(s, solutions, 0, "", 0);
+    return solutions;
+}
 
+private void restoreIp(String ip, List<String> solutions, int idx, String restored, int count) {
+    if (count > 4) return;
+    if (count == 4 && idx == ip.length()) solutions.add(restored);
+    
+    for (int i=1; i<4; i++) {
+        if (idx+i > ip.length()) break;
+        String s = ip.substring(idx,idx+i);
+        if ((s.startsWith("0") && s.length()>1) || (i==3 && Integer.parseInt(s) >= 256)) continue;
+        restoreIp(ip, solutions, idx+i, restored+s+(count==3?"" : "."), count+1);
+    }
+}
 ```
-## 77 
+## 77 Group Anagrams
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一组字符串，返回各组字母组成相同的单词。
+For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"],
+Return:
+[
+  ["ate", "eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+#### 思路：首先利用排序算法，这样只要字母组成相同的单词都是相同的。然后利用hashMap节省查找时间，以排完序的字符串为key，组成单词字母相同的字符串组为value。这个方法其实也是遍历，我自己的想法是如果都是字母的话，就将每个字母的int值相加得到sum，然后将所有的sum相同的放在一起组成一个list，然后再通过对list分析其字母组成划分不同的list，这样复杂度应该为O(n)。少掉了对字符串排序的时间。
 #### 代码：
 ```
-
+public List<List<String>> groupAnagrams(String[] strs) {
+        if (strs == null || strs.length == 0) return new ArrayList<List<String>>();
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (String s : strs) {
+            char[] ca = s.toCharArray();
+            Arrays.sort(ca);
+            String keyStr = String.valueOf(ca);
+            if (!map.containsKey(keyStr)) map.put(keyStr, new ArrayList<String>());
+            map.get(keyStr).add(s);
+        }
+        return new ArrayList<List<String>>(map.values());
+    }
 ```
-## 78 
+## 78 Simplify Path
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给一个字符串，该字符串表示Linux路径命令，返回最后的路径
+For example,
+path = "/home/", => "/home"
+path = "/a/./b/../../c/", => "/c"
+#### 思路：用双端队列，如果遇到'..'就弹出上一个文件夹（pop方法）。否则就加入到头插队列中（push）。最后将队列中的路径返回成一个字符串。（注意下面代码不能用stack代替deque。原因是最后合成一个的方法不一样。）。我之前的思路是利用stringbuilder，直接暴力。太可怕了，我为啥如此的暴力。
 #### 代码：
 ```
-
+public String simplifyPath(String path) {
+    Deque<String> stack = new LinkedList<>();
+    Set<String> skip = new HashSet<>(Arrays.asList("..",".",""));
+    for (String dir : path.split("/")) {
+        if (dir.equals("..") && !stack.isEmpty()) stack.pop();
+        else if (!skip.contains(dir)) stack.push(dir);
+    }
+    String res = "";
+    for (String dir : stack) res = "/" + dir + res;
+    return res.isEmpty() ? "/" : res;
+}
 ```
-## 79 
+## 79 Compare Version Numbers
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：设定一个字符串，两个整数用‘.’来间隔。这种字符串的大小比较是先比较前面的，前面相同再比较后面的。问给定两个这种字符串。判断大小
+0.1 < 1.1 < 1.2 < 13.37
+#### 思路：看代码，最重要的是看看split("\\.")对特殊字符的转换。
 #### 代码：
 ```
-
+public int compareVersion(String version1, String version2) {
+    String[] levels1 = version1.split("\\.");
+    String[] levels2 = version2.split("\\.");
+    
+    int length = Math.max(levels1.length, levels2.length);
+    for (int i=0; i<length; i++) {
+    	Integer v1 = i < levels1.length ? Integer.parseInt(levels1[i]) : 0;
+    	Integer v2 = i < levels2.length ? Integer.parseInt(levels2[i]) : 0;
+    	int compare = v1.compareTo(v2);
+    	if (compare != 0) {
+    		return compare;
+    	}
+    }
+    
+    return 0;
+}
 ```
 ## 80 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 81 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 82 
 #### _medium_
 #### 描述：
 #### 思路：
