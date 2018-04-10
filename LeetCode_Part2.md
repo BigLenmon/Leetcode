@@ -678,24 +678,131 @@ public int compareVersion(String version1, String version2) {
     return 0;
 }
 ```
-## 80 
+## 80 Multiply Strings
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给出两个整数（用string表示）,求返回这两个数的乘积
+#### 思路：按照最简单的乘法表做，先求得每个位的值。最后在考虑进位。最后输出。下面代码是优化版。这类题不能像投机，就得慢慢写，今天还做了阿里的编程测验题，是阿拉伯数字转中文表达的。难啊
 #### 代码：
 ```
+public String multiply(String num1, String num2) {
+    int m = num1.length(), n = num2.length();
+    int[] pos = new int[m + n];
+   
+    for(int i = m - 1; i >= 0; i--) {
+        for(int j = n - 1; j >= 0; j--) {
+            int mul = (num1.charAt(i) - '0') * (num2.charAt(j) - '0'); 
+            int p1 = i + j, p2 = i + j + 1;
+            int sum = mul + pos[p2];
 
+            pos[p1] += sum / 10;
+            pos[p2] = (sum) % 10;
+        }
+    }  
+    
+    StringBuilder sb = new StringBuilder();
+    for(int p : pos) if(!(sb.length() == 0 && p == 0)) sb.append(p);
+    return sb.length() == 0 ? "0" : sb.toString();
+}
 ```
-## 81 
+## 81 Generate Parentheses
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数n，返回有效的括号组合
+#### 思路：溯源法。注意右括号不能大于左括号数目。
 #### 代码：
 ```
-
+public List<String> generateParenthesis(int n) {
+        List<String> list = new ArrayList<String>();
+        backtrack(list, "", 0, 0, n);
+        return list;
+    }
+    
+public void backtrack(List<String> list, String str, int open, int close, int max){
+        
+        if(str.length() == max*2){
+            list.add(str);
+            return;
+        }
+        
+        if(open < max)
+            backtrack(list, str+"(", open+1, close, max);
+        if(close < open)
+            backtrack(list, str+")", open, close+1, max);
+    }
 ```
 ## 82 
 #### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 83 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 84 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 85 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 86 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 87 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 88 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 89 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 90 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 91 
+#### _hard_
 #### 描述：
 #### 思路：
 #### 代码：
