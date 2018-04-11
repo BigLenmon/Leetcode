@@ -729,37 +729,146 @@ public void backtrack(List<String> list, String str, int open, int close, int ma
             backtrack(list, str+")", open, close+1, max);
     }
 ```
-## 82 
+## 82 Reverse Words in a String
 #### _medium_
-#### 描述：
+#### 描述：给定一个包含空格的字符，将字符串按单词反序。
+For example,
+Given s = "the sky is blue",
+return "blue is sky the". 
+#### 思路：和之前循环右移的题有点类似，先反序整个字符串，在反转单词，最后清理空格。这样的思路很好，空间复杂度为O(n)。其实用栈最简单，比较繁琐的是从后往前抽取单词，添加到新字符串中。
+#### 代码：
+```
+public String reverseWords(String s) {
+    if (s == null) return null;
+    
+    char[] a = s.toCharArray();
+    int n = a.length;
+    
+    // step 1. reverse the whole string
+    reverse(a, 0, n - 1);
+    // step 2. reverse each word
+    reverseWords(a, n);
+    // step 3. clean up spaces
+    return cleanSpaces(a, n);
+  }
+  
+  void reverseWords(char[] a, int n) {
+    int i = 0, j = 0;
+      
+    while (i < n) {
+      while (i < j || i < n && a[i] == ' ') i++; // skip spaces
+      while (j < i || j < n && a[j] != ' ') j++; // skip non spaces
+      reverse(a, i, j - 1);                      // reverse the word
+    }
+  }
+  
+  // trim leading, trailing and multiple spaces
+  String cleanSpaces(char[] a, int n) {
+    int i = 0, j = 0;
+      
+    while (j < n) {
+      while (j < n && a[j] == ' ') j++;             // skip spaces
+      while (j < n && a[j] != ' ') a[i++] = a[j++]; // keep non spaces
+      while (j < n && a[j] == ' ') j++;             // skip spaces
+      if (j < n) a[i++] = ' ';                      // keep only one space
+    }
+  
+    return new String(a).substring(0, i);
+  }
+  
+  // reverse a[] from a[i] to a[j]
+  private void reverse(char[] a, int i, int j) {
+    while (i < j) {
+      char t = a[i];
+      a[i++] = a[j];
+      a[j--] = t;
+    }
+  }
+```
+## 83 Longest Substring Without Repeating Characters
+#### _medium_
+#### 描述：给定一个字符串，返回最大连续不重复子串长度。
+#### 思路：遍历数组，创建一个hashMap存储字符和它对应的位置。每次都查看hashMap看是否有重复，有则更新子串的起始位置。
+#### 代码：
+```
+public int lengthOfLongestSubstring(String s) {
+        if (s.length()==0) return 0;
+        HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+        int max=0;
+        for (int i=0, j=0; i<s.length(); ++i){
+            if (map.containsKey(s.charAt(i))){
+                j = Math.max(j,map.get(s.charAt(i))+1); //这个很巧妙，更新子串的起始位置j，取最大的位置。
+            }
+            map.put(s.charAt(i),i);
+            max = Math.max(max,i-j+1);
+        }
+        return max;
+    }
+```
+## 84 Letter Combinations of a Phone Number
+#### _medium_
+#### 描述：给定一串数字，按照老版手机键盘的顺序，返回可能的字母组合。
+Input:Digit string "23"
+Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
 #### 思路：
 #### 代码：
 ```
-
+    public List<String> letterCombinations(String digits) {
+    LinkedList<String> ans = new LinkedList<String>();
+    if(digits.isEmpty()) return ans;
+    String[] mapping = new String[] {"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    ans.add("");
+    for(int i =0; i<digits.length();i++){
+        int x = Character.getNumericValue(digits.charAt(i));
+        while(ans.peek().length()==i){
+            String t = ans.remove();
+            for(char s : mapping[x].toCharArray())
+                ans.add(t+s);
+        }
+    }
+    return ans;
+}
 ```
-## 83 
+## 85 Basic Calculator II
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个字符串，代表一个加减乘除式子。求该式子的结果
+#### 思路：用stack存储结果，如果是乘除法，就直接计算出结果，否则就进入栈中。详细看代码。我之前做的是用两个栈来做，一个存数字，一个存操作。比较复杂，我还忘了多位数字的情况（有十位百位的情况）。太菜了。
 #### 代码：
 ```
+public int calculate(String s) {
+    int len;
+    if(s==null || (len = s.length())==0) return 0;
+    Stack<Integer> stack = new Stack<Integer>();
+    int num = 0;
+    char sign = '+';
+    for(int i=0;i<len;i++){
+        if(Character.isDigit(s.charAt(i))){
+            num = num*10+s.charAt(i)-'0';
+        }
+        if((!Character.isDigit(s.charAt(i)) &&' '!=s.charAt(i)) || i==len-1){
+            if(sign=='-'){
+                stack.push(-num);
+            }
+            if(sign=='+'){
+                stack.push(num);
+            }
+            if(sign=='*'){
+                stack.push(stack.pop()*num);
+            }
+            if(sign=='/'){
+                stack.push(stack.pop()/num);
+            }
+            sign = s.charAt(i);
+            num = 0;
+        }
+    }
 
-```
-## 84 
-#### _medium_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
-```
-## 85 
-#### _medium_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
+    int re = 0;
+    for(int i:stack){
+        re += i;
+    }
+    return re;
+}
 ```
 ## 86 
 #### _hard_
@@ -802,6 +911,46 @@ public void backtrack(List<String> list, String str, int open, int close, int ma
 
 ```
 ## 91 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 92 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 93 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 94 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 95 
+#### _hard_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 96 
 #### _hard_
 #### 描述：
 #### 思路：
