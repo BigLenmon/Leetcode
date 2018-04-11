@@ -870,13 +870,42 @@ public int calculate(String s) {
     return re;
 }
 ```
-## 86 
+## 86 Integer to English Words
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数字，返回英文的表达式
+#### 思路：和之前在阿里测试做的返回中文的类似，都是按照一块一块来处理的。中文是一万以下，英文是一千以下。其他的类似。
 #### 代码：
 ```
+private final String[] LESS_THAN_20 = {"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+private final String[] TENS = {"", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
+private final String[] THOUSANDS = {"", "Thousand", "Million", "Billion"};
 
+public String numberToWords(int num) {
+    if (num == 0) return "Zero";
+
+    int i = 0;
+    String words = "";
+    
+    while (num > 0) {
+        if (num % 1000 != 0)
+    	    words = helper(num % 1000) +THOUSANDS[i] + " " + words;
+    	num /= 1000;
+    	i++;
+    }
+    
+    return words.trim();
+}
+
+private String helper(int num) {
+    if (num == 0)
+        return "";
+    else if (num < 20)
+        return LESS_THAN_20[num] + " ";
+    else if (num < 100)
+        return TENS[num / 10] + " " + helper(num % 10);
+    else
+        return LESS_THAN_20[num / 100] + " Hundred " + helper(num % 100);
+}
 ```
 ## 87 
 #### _hard_
