@@ -907,37 +907,175 @@ private String helper(int num) {
         return LESS_THAN_20[num / 100] + " Hundred " + helper(num % 100);
 }
 ```
-## 87 
+## 87 Valid Number
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一个字符串，判断是否是合理的数字
+#### 思路：要判断是否为小数，整数，指数（2e10）。
 #### 代码：
 ```
-
+s = s.trim();
+    
+    boolean pointSeen = false;
+    boolean eSeen = false;
+    boolean numberSeen = false;
+    boolean numberAfterE = true;
+    for(int i=0; i<s.length(); i++) {
+        if('0' <= s.charAt(i) && s.charAt(i) <= '9') {
+            numberSeen = true;
+            numberAfterE = true;
+        } else if(s.charAt(i) == '.') {
+            if(eSeen || pointSeen) {
+                return false;
+            }
+            pointSeen = true;
+        } else if(s.charAt(i) == 'e') {
+            if(eSeen || !numberSeen) {
+                return false;
+            }
+            numberAfterE = false;
+            eSeen = true;
+        } else if(s.charAt(i) == '-' || s.charAt(i) == '+') {
+            if(i != 0 && s.charAt(i-1) != 'e') {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    return numberSeen && numberAfterE;
 ```
-## 88 
+## 88 Substring with Concatenation of All Words
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一个字符串s，和一组长度相同的字符串list。问list全部元素组成的字符串，是否是s的子串，如果是返回各个起始位置的集合
+#### 思路：因为每个list的元素长度都相同，那么就从s的i(i 从0到字符串末尾)位置开始遍历，并且看s(i+j* len,i+(j+1) * len）(j从0开始)。是否是list元素之一。知道把list里面的元素全部遍历完。返回i的值。其中可以建立一个关于list的hashMap和遍历之后的hashMap，这样就可以快速查明是list的某元素是否已经遍历过了。
 #### 代码：
 ```
-
+public List<Integer> findSubstring(String s, String[] words) {
+        final Map<String, Integer> counts = new HashMap<>();
+        for (final String word : words) {
+            counts.put(word, counts.getOrDefault(word, 0) + 1);
+        }
+        final List<Integer> indexes = new ArrayList<>();
+        final int n = s.length(), num = words.length, len = words[0].length();
+        for (int i = 0; i < n - num * len + 1; i++) {
+            final Map<String, Integer> seen = new HashMap<>();
+            int j = 0;
+            while (j < num) {
+                final String word = s.substring(i + j * len, i + (j + 1) * len);
+                if (counts.containsKey(word)) {
+                    seen.put(word, seen.getOrDefault(word, 0) + 1);
+                    if (seen.get(word) > counts.getOrDefault(word, 0)) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+                j++;
+            }
+            if (j == num) {
+                indexes.add(i);
+            }
+        }
+        return indexes;
+    }
 ```
-## 89 
+## 89 Palindrome Pairs
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一组字符串，问任意两个字符串是否能组成回文串。返回所有结果（不允许重复结果）
+ Example 1:
+Given words = ["bat", "tab", "cat"]
+Return [[0, 1], [1, 0]]
+The palindromes are ["battab", "tabbat"]
+
+Example 2:
+Given words = ["abcd", "dcba", "lls", "s", "sssll"]
+Return [[0, 1], [1, 0], [3, 2], [2, 4]]
+The palindromes are ["dcbaabcd", "abcddcba", "slls", "llssssll"]
+#### 思路：有两种方法。一种最简单的暴力，从i个元素开始，遍历i+1到最后一个元素。看组成的元素是否是回文子串。第二种是利用回文串的特性，如果字符串s.substring(0, j)是回文子串的话，加上s.substring(j)和s.substring(j)的反序就能组成一个回文串。对比两种方法，复杂度都差不多，第一种适合字符串长度大，字符组小的情况，第二种尤其适合字符串长度小，组内元素多的情况。下面是第二种方法的代码
 #### 代码：
 ```
-
+public List<List<Integer>> palindromePairs(String[] words) {
+    List<List<Integer>> res = new ArrayList<>(); 
+    if (words == null || words.length < 2) {
+        return res;
+    }
+    Map<String, Integer> map = new HashMap<String, Integer>();
+    for (int i = 0; i < words.length; i++) {
+        map.put(words[i], i);
+    }
+    for (int i = 0; i < words.length; i++) {
+        for (int j = 0; j <= words[i].length(); j++) {
+            String str1 = words[i].substring(0, j);
+            String str2 = words[i].substring(j);
+            addPair(map, res, str1, str2, i, false);
+            if(str2.length() != 0) {
+                addPair(map, res, str2, str1, i, true);
+            }
+        }
+    }
+    return res;
+}
+private void addPair(Map<String, Integer> map, List<List<Integer>> res, String str1, String str2, int index, boolean reverse) {
+    if (isPalindrome(str1)) {
+        String str2rev = new StringBuilder(str2).reverse().toString();
+        if (map.containsKey(str2rev) && map.get(str2rev) != index) {
+            List<Integer> list = new ArrayList<>();
+            if(!reverse) {
+                list.add(map.get(str2rev));
+                list.add(index);
+            } else {
+                list.add(index);
+                list.add(map.get(str2rev));
+            }
+            res.add(list);
+        }
+    }
+}
 ```
-## 90 
+## 90 Shortest Palindrome
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定一个字符串，只能往头部添加字符，返回最小的回文子串
+For example:
+Given "aacecaaa", return "aaacecaaa".
+Given "abcd", return "dcbabcd".
+#### 思路：两种思路：第一种利用kmp的next数组。对于字符串s，扩建成ss= s+“#”+s.reverse.对ss求next数组，得到next最后一位的数据i，就向头添加s.substring(i).reverser()。这个和next的特性有关。第二种思路就有点nb了，通过一个for循环，得到一个j。这个j的不可能是s的中点，并且j之后的i不存在s[j] == s[i]。这样就让j后面的字符插入到头部，再对s.substring(0,j)进行相同的处理。详细见代码
 #### 代码：
+#### solution1:
 ```
-
+public String shortestPalindrome(String s) {
+        int j = 0;
+        for(int i = s.length()-1;i >= 0;i--)
+            if(s.charAt(i) == s.charAt(j)) j++;
+        if(j == s.length()) return s;
+        return new StringBuilder(s.substring(j)).reverse().toString() + shortestPalindrome(s.substring(0,j))+s.substring(j);
+    }
+```
+#### solution2:
+```
+    public String shortestPalindrome(String s) {
+        String temp = s + "#" + new StringBuilder(s).reverse().toString();
+        int r = getTable(temp)+1;
+    
+    //get the maximum palin part in s starts from 0
+    return new StringBuilder(s.substring(r)).reverse().toString() + s;
+    }
+    public int getTable(String p){
+        int[] next = new int[p.length()];
+        next[0] = -1;
+        int j = -1;
+        int i = 0;
+        while(i < p.length()-1){
+            if(j== -1 || p.charAt(i) == p.charAt(j)){
+                i++;
+                j++;
+                next[i] = j;
+            }
+            else
+                j = next[j];
+        }
+        return next[p.length()-1];
+    }
 ```
 ## 91 
 #### _hard_
