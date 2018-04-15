@@ -1077,13 +1077,33 @@ public String shortestPalindrome(String s) {
         return next[p.length()-1];
     }
 ```
-## 91 
+## 91 Minimum Window Substring
 #### _hard_
-#### 描述：
-#### 思路：
+#### 描述：给定两个字符串s,t。返回s包含t所有元素的最短子串。
+For example,
+S = "ADOBECODEBANC"
+T = "ABC"
+
+Minimum window is "BANC".
+#### 思路：利用滑动窗口来做，首先创立一个长度128的数组，用于快速读取或者修改数据。接下来用两个变量lo,hi表示当前窗口的左右边界。首先将t中的字符存储到数组中，然后遍历字符串s，数组中相应位置的值自减一。如果将counter（t的长度） == 0 说明当前字符串包含了t的所有字符元素。然后通过一个while循环来找到当前字符的真正头位置（第一个属于t的元素）。然后再遍历s字符串，这时map中大于0的就是第一个属于t的元素的位置，所以如果再次counter == 0 就表示遇到了等于头结点的字符了。然后比较得到最短长度，同时更新头结点（s中接下来属于t的元素）。最后得到结果。
 #### 代码：
 ```
-
+public String minWindow(String s, String t) {
+        int[] map = new int[128];
+        for(char c : t.toCharArray())
+            map[c]++;
+        int lo = 0,hi = 0,head = 0,counter = t.length(),len = Integer.MAX_VALUE;
+        while(hi < s.length()){
+            if(map[s.charAt(hi++)]-- > 0 )
+                counter--;
+            while(counter == 0){
+                if(hi - lo < len)
+                len = hi - (head = lo);
+                if(map[s.charAt(lo++)]++ == 0) counter ++;
+            }
+        }
+        return len == Integer.MAX_VALUE ? "" : s.substring(head,head+len);
+    }
 ```
 ## 92 
 #### _hard_
