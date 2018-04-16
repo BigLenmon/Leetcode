@@ -1130,27 +1130,79 @@ public boolean isPalindrome(int x) {
 return n == 0 ? "" : convertToTitle(--n / 26) + (char)('A' + (n % 26));
 
 ```
-## 94 
+## 94 Factorial Trailing Zeroes
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：给定一个整数n，求n!尾部有多少个零
+#### 思路：因为得到0,一定是2 * 5,并且由2组成的数一定是比由5组成的数多，那么该问题就转换为n里面有多少个数，求得5的个数。应为像25,125等数提供了2,3个5。则问题就转换为n/5 + n/25 + n/125.....就变成了一下的代码。（这个难度真的是easy吗？？！！！）
 #### 代码：
 ```
-
+public int trailingZeroes(int n) {
+        return n == 0 ? 0 : n / 5 + trailingZeroes(n / 5);
+    }
 ```
-## 95 
+## 95 Sqrt(x)
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数，求该数开方，如果数不是整数，就切除小数部分。
+#### 思路：一开始用遍历，从零开始，找到第一个数平方大于等于n的数。但是复杂度过高。后来就用二叉查找的方法。
 #### 代码：
 ```
-
+public int sqrt(int x) {
+    if (x == 0)
+        return 0;
+    int left = 1, right = Integer.MAX_VALUE;
+    while (true) {
+        int mid = left + (right - left)/2; 
+        if (mid > x/mid) {
+            right = mid - 1;
+        } else {
+            if (mid + 1 > x/(mid + 1))
+                return mid;
+            left = mid + 1;
+        }
+    }
+}
 ```
-## 96 
+## 96 Excel Sheet Column Number
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：和之前的Excel Sheet Column Title题正好相反，给定一个string，返回相应的编码整数
+#### 思路：26进制。这才是简单题啊。
 #### 代码：
 ```
+public int titleToNumber(String s) {
+        if(s.equals("")) return 0;
+        int res = 0;
+        for(char c : s.toCharArray()){
+            int t = c - 'A' + 1;
+            res = res * 26 + t;
+        }
+        return res;
+    }
+```
+## 97 Happy Number
+#### _easy_
+#### 描述：给定一个数，将他每个位上的数平方相加，最后看是否为1,如果不是再次操作，问最后是否为1。
+#### 思路：我一开始以为不会出现操作后等于操作前的数的，结果是有的。那有种思路就是和判断链表中是否有环的思路一样。还有一种是利用hashset，来破除无限循环。
+#### 代码：
+```
+int digitSquareSum(int n) {
+    int sum = 0, tmp;
+    while (n > 0) {
+        tmp = n % 10;
+        sum += tmp * tmp;
+        n /= 10;
+    }
+    return sum;
+}
 
+boolean isHappy(int n) {
+    int slow, fast;
+    slow = fast = n;
+    do {
+        slow = digitSquareSum(slow);
+        fast = digitSquareSum(fast);
+        fast = digitSquareSum(fast);
+    } while(slow != fast);
+    if (slow == 1) return true;
+    else return false;
+}
 ```
