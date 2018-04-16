@@ -1105,24 +1105,33 @@ public String minWindow(String s, String t) {
         return len == Integer.MAX_VALUE ? "" : s.substring(head,head+len);
     }
 ```
-## 92 
-#### _hard_
-#### 描述：
-#### 思路：
+## 92 Palindrome Number
+#### _easy_
+#### 描述：给定一个整数，判断该整数是否是回文的。（不能将整数转换为string）
+#### 思路：正常思路是获得给定整数i的长度，然后利用除法和求余数来得到一头一尾,如果相等就接着遍历，如果不是就返回false。但是下面思路却不一样，创建一个整数，代表i的右半部，然后利用除法得到i的左半部，最后判断左右半边是否相等（厉害了）。（ps：正常思路有个值得注意的问题，就是判断是否溢出，有两种方法，第一种就是将int转换成long，第二种就是和integer的最大值比较：result > Integer.MAX_VALUE / 10  || ((result == Integer.MAX_VALUE / 10) && (n % 10 > Integer.MAX_VALUE % 10))）
 #### 代码：
 ```
-
+public boolean isPalindrome(int x) {
+    if (x<0 || (x!=0 && x%10==0)) return false;
+    int rev = 0;
+    while (x>rev){
+    	rev = rev*10 + x%10;
+    	x = x/10;
+    }
+    return (x==rev || x==rev/10);
+}
 ```
-## 93 
-#### _hard_
-#### 描述：
-#### 思路：
+## 93 Excel Sheet Column Title
+#### _easy_
+#### 描述：给定一种编码方式：1 -> A，2 -> B，3 -> C...26 -> Z，27 -> AA，28 -> AB。给定一个整数，返回正确的string 
+#### 思路：26进制，不过要注意的是每次循环的时候都得减去1。因为它没有0的编码。（减去1真的卡了我好久。。。麻蛋）
 #### 代码：
 ```
+return n == 0 ? "" : convertToTitle(--n / 26) + (char)('A' + (n % 26));
 
 ```
 ## 94 
-#### _hard_
+#### _easy_
 #### 描述：
 #### 思路：
 #### 代码：
@@ -1130,7 +1139,7 @@ public String minWindow(String s, String t) {
 
 ```
 ## 95 
-#### _hard_
+#### _easy_
 #### 描述：
 #### 思路：
 #### 代码：
@@ -1138,7 +1147,7 @@ public String minWindow(String s, String t) {
 
 ```
 ## 96 
-#### _hard_
+#### _easy_
 #### 描述：
 #### 思路：
 #### 代码：
