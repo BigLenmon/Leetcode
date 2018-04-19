@@ -1206,21 +1206,102 @@ boolean isHappy(int n) {
     else return false;
 }
 ```
-## 97 
+## 97 Divide Two Integers
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定两个数字，求这两个数的商。结果为整数（不允许用除法，乘法，求余操作）
+Input: dividend = 10, divisor = 3
+Output: 3
+#### 思路：首先判断符号位，然后求商，比较快的方法是用二进制的方法求，先求二进制最高位，在利用递归依次求下面的最高位。不过要注意的一点是，被除数有可能是负数的最大值，直接求绝对值不行，所以得转成long型再求。
 #### 代码：
 ```
+public int divide(int dividend, int divisor) {
+	//Reduce the problem to positive long integer to make it easier.
+	//Use long to avoid integer overflow cases.
+	int sign = 1;
+	if ((dividend > 0 && divisor < 0) || (dividend < 0 && divisor > 0))
+		sign = -1;
+	long ldividend = Math.abs((long) dividend);
+	long ldivisor = Math.abs((long) divisor);
+	
+	//Take care the edge cases.
+	if (ldivisor == 0) return Integer.MAX_VALUE;
+	if ((ldividend == 0) || (ldividend < ldivisor))	return 0;
+	
+	long lans = ldivide(ldividend, ldivisor);
+	
+	int ans;
+	if (lans > Integer.MAX_VALUE){ //Handle overflow.
+		ans = (sign == 1)? Integer.MAX_VALUE : Integer.MIN_VALUE;
+	} else {
+		ans = (int) (sign * lans);
+	}
+	return ans;
+}
 
+private long ldivide(long ldividend, long ldivisor) {
+	// Recursion exit condition
+	if (ldividend < ldivisor) return 0;
+	
+	//  Find the largest multiple so that (divisor * multiple <= dividend), 
+	//  whereas we are moving with stride 1, 2, 4, 8, 16...2^n for performance reason.
+	//  Think this as a binary search.
+	long sum = ldivisor;
+	long multiple = 1;
+	while ((sum+sum) <= ldividend) {
+		sum += sum;
+		multiple += multiple;
+	}
+	//Look for additional value for the multiple from the reminder (dividend - sum) recursively.
+	return multiple + ldivide(ldividend - sum, ldivisor);
+}
 ```
-## 98 
+## 98 Fraction to Recurring Decimal
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定两个整数，用string表示出他们的商，如果小数部分有重复的地方，用括号把他们括起来。
+For example,
+ Given numerator = 1, denominator = 2, return "0.5".
+ Given numerator = 2, denominator = 1, return "2".
+ Given numerator = 2, denominator = 3, return "0.(6)".
+#### 思路：首先还是利用除法求得整数部分，然后将余数乘10，等大于除数的时候就再利用除法得到小数位的值，对于重复的小数，我们用hashmap来存储小数部分和该小数部分对应的位置，当再次碰到这个小数部分时，就知道有重复了，在对应位置加上括号即可（这个太nb了）
 #### 代码：
 ```
-
+public String fractionToDecimal(int numerator, int denominator) {
+        if (numerator == 0) {
+            return "0";
+        }
+        StringBuilder res = new StringBuilder();
+        // "+" or "-"
+        res.append(((numerator > 0) ^ (denominator > 0)) ? "-" : "");
+        long num = Math.abs((long)numerator);
+        long den = Math.abs((long)denominator);
+        
+        // integral part
+        res.append(num / den);
+        num %= den;
+        if (num == 0) {
+            return res.toString();
+        }
+        
+        // fractional part
+        res.append(".");
+        HashMap<Long, Integer> map = new HashMap<Long, Integer>();
+        map.put(num, res.length());
+        while (num != 0) {
+            num *= 10;
+            res.append(num / den);
+            num %= den;
+            if (map.containsKey(num)) {
+                int index = map.get(num);
+                res.insert(index, "(");
+                res.append(")");
+                break;
+            }
+            else {
+                map.put(num, res.length());
+            }
+        }
+        return res.toString();
+    }
 ```
 ## 99 
 #### _medium_
