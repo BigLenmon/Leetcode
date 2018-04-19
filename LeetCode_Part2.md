@@ -1330,7 +1330,7 @@ public double myPow(double x, int n) {
 ## 101 Permutation Sequence
 #### _medium_
 #### 描述：给定两个整数n,k。给出从1到n的组成的序列中第k个序列，序列按字典顺序排序
-#### 思路：
+#### 思路：先求最高位，然后按照接下来的每一位来求。
 #### 代码：
 ```
 public String getPermutation(int n, int k) {
@@ -1358,7 +1358,7 @@ public String getPermutation(int n, int k) {
     for(int i = 1; i <= n; i++){
         int index = k/factorial[n-i];
         sb.append(String.valueOf(numbers.get(index)));
-        numbers.remove(index);
+        numbers.remove(index); //移除这一位数字
         k-=index*factorial[n-i];
     }
     
