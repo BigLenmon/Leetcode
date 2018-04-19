@@ -1303,29 +1303,67 @@ public String fractionToDecimal(int numerator, int denominator) {
         return res.toString();
     }
 ```
-## 99 
+## 99 Rectangle Area
 #### _medium_
-#### 描述：
+#### 描述：给定四个二元组，代表两个矩形的左下角和右上角，求两个矩形组成的面积（面积不会超出integer的最大值）
+#### 思路：要求的两个矩阵重叠组成的小矩形的四个顶点。（我之前做的是判断各种情况，是否重叠，哪个顶点重叠，太麻烦了）
+#### 代码：
+```
+int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {
+    int left = max(A,E), right = max(min(C,G), left);
+    int bottom = max(B,F), top = max(min(D,H), bottom);
+    return (C-A)*(D-B) - (right-left)*(top-bottom) + (G-E)*(H-F);
+}
+```
+## 100 Pow(x, n)
+#### _medium_
+#### 描述：给定一个double和一个int，求pow(double,int)
+#### 思路：利用x ^ n = x ^(n/2) & x^(n/2)这样就可以用递归来实现了，但是要注意负数和n为负数的最小值的情况
+#### 代码：
+```
+public double myPow(double x, int n) {
+        if(n == 0) return 1.;
+        double res = myPow(x, n / 2); //不直接将n转换为整数，防止n为最小值的情况
+        return n % 2 == 0 ? res * res : n < 0 ? res * res * (1 / x) : res * res * x;
+    }
+```
+## 101 Permutation Sequence
+#### _medium_
+#### 描述：给定两个整数n,k。给出从1到n的组成的序列中第k个序列，序列按字典顺序排序
 #### 思路：
 #### 代码：
 ```
-
-```
-## 100 
-#### _medium_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
-```
-## 101 
-#### _medium_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
+public String getPermutation(int n, int k) {
+    List<Integer> numbers = new ArrayList<>();
+    int[] factorial = new int[n+1];
+    StringBuilder sb = new StringBuilder();
+    
+    // create an array of factorial lookup
+    int sum = 1;
+    factorial[0] = 1;
+    for(int i=1; i<=n; i++){
+        sum *= i;
+        factorial[i] = sum;
+    }
+    // factorial[] = {1, 1, 2, 6, 24, ... n!}
+    
+    // create a list of numbers to get indices
+    for(int i=1; i<=n; i++){
+        numbers.add(i);
+    }
+    // numbers = {1, 2, 3, 4}
+    
+    k--;
+    
+    for(int i = 1; i <= n; i++){
+        int index = k/factorial[n-i];
+        sb.append(String.valueOf(numbers.get(index)));
+        numbers.remove(index);
+        k-=index*factorial[n-i];
+    }
+    
+    return String.valueOf(sb);
+}
 ```
 ## 102 
 #### _medium_
