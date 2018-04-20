@@ -1365,29 +1365,114 @@ public String getPermutation(int n, int k) {
     return String.valueOf(sb);
 }
 ```
-## 102 
+## 102 Add Two Numbers
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定两个链表，模拟整数相加。
+#### 思路：简单的链表操作，但是得注意进位问题。
 #### 代码：
 ```
-
+public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode c1 = l1;
+        ListNode c2 = l2;
+        ListNode sentinel = new ListNode(0);
+        ListNode d = sentinel;
+        int sum = 0;
+        while (c1 != null || c2 != null) {
+            sum /= 10;
+            if (c1 != null) {
+                sum += c1.val;
+                c1 = c1.next;
+            }
+            if (c2 != null) {
+                sum += c2.val;
+                c2 = c2.next;
+            }
+            d.next = new ListNode(sum % 10);
+            d = d.next;
+        }
+        if (sum / 10 == 1)
+            d.next = new ListNode(1);
+        return sentinel.next;
+    }
 ```
-## 103 
-#### _medium_
-#### 描述：
-#### 思路：
+## 103 Max Points on a Line
+#### _hard_
+#### 描述：给出一连串平面坐标，问最多有多少个点在同一条线上
+#### 思路：暴力法了，不过有一些优化在里面，比如利用辗转相除法求最大公约数，利用hashMap存储结果。
 #### 代码：
 ```
-
+        public int maxPoints(Point[] points) {
+        	if (points==null) return 0;
+        	if (points.length<=2) return points.length;
+        	
+        	Map<Integer,Map<Integer,Integer>> map = new HashMap<Integer,Map<Integer,Integer>>();
+        	int result=0;
+        	for (int i=0;i<points.length;i++){ 
+        		map.clear();
+        		int overlap=0,max=0;
+        		for (int j=i+1;j<points.length;j++){
+        			int x=points[j].x-points[i].x;
+        			int y=points[j].y-points[i].y;
+        			if (x==0&&y==0){
+        				overlap++;
+        				continue;
+        			}
+        			int gcd=generateGCD(x,y);
+        			if (gcd!=0){
+        				x/=gcd;
+        				y/=gcd;
+        			}
+        			
+        			if (map.containsKey(x)){
+        				if (map.get(x).containsKey(y)){
+        					map.get(x).put(y, map.get(x).get(y)+1);
+        				}else{
+        					map.get(x).put(y, 1);
+        				}   					
+        			}else{
+        				Map<Integer,Integer> m = new HashMap<Integer,Integer>();
+        				m.put(y, 1);
+        				map.put(x, m);
+        			}
+        			max=Math.max(max, map.get(x).get(y));
+        		}
+        		result=Math.max(result, max+overlap+1);
+        	}
+        	return result;
+        	
+        	
+        }
+        private int generateGCD(int a,int b){
+    
+        	if (b==0) return a;
+        	else return generateGCD(b,a%b);
+        	
+        }
 ```
-## 104 
+## 104 Binary Tree Inorder Traversal
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：二叉树中序遍历（用迭代不要用递归）
+#### 思路：利用栈，详细见代码。
 #### 代码：
 ```
+public List<Integer> inorderTraversal(TreeNode root) {
+    List<Integer> list = new ArrayList<Integer>();
 
+    Stack<TreeNode> stack = new Stack<TreeNode>();
+    TreeNode cur = root;
+
+    while(cur!=null || !stack.empty()){
+        while(cur!=null){
+            stack.add(cur);
+            cur = cur.left;
+        }
+        cur = stack.pop();
+        list.add(cur.val);
+        cur = cur.right;
+    }
+
+    return list;
+}
 ```
 ## 105 
 #### _medium_
