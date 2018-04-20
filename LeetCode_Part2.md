@@ -948,8 +948,9 @@ s = s.trim();
 ## 88 Substring with Concatenation of All Words
 #### _hard_
 #### 描述：给定一个字符串s，和一组长度相同的字符串list。问list全部元素组成的字符串，是否是s的子串，如果是返回各个起始位置的集合
-#### 思路：因为每个list的元素长度都相同，那么就从s的i(i 从0到字符串末尾)位置开始遍历，并且看s(i+j* len,i+(j+1) * len）(j从0开始)。是否是list元素之一。知道把list里面的元素全部遍历完。返回i的值。其中可以建立一个关于list的hashMap和遍历之后的hashMap，这样就可以快速查明是list的某元素是否已经遍历过了。
+#### 思路：因为每个list的元素长度都相同，那么就从s的i(i 从0到字符串末尾)位置开始遍历，并且看s(i+j* len,i+(j+1) * len）(j从0开始)。是否是list元素之一。知道把list里面的元素全部遍历完。返回i的值。其中可以建立一个关于list的hashMap和遍历之后的hashMap，这样就可以快速查明是list的某元素是否已经遍历过了。还可以用滑动窗口来做,将每个list的元素当做一个字母，就和Minimum Window Substring一样了，不过为了加速，就采用了写提前处理。
 #### 代码：
+#### solution1
 ```
 public List<Integer> findSubstring(String s, String[] words) {
         final Map<String, Integer> counts = new HashMap<>();
@@ -979,6 +980,79 @@ public List<Integer> findSubstring(String s, String[] words) {
         }
         return indexes;
     }
+```
+#### solution2
+```
+public List<Integer> findSubstring(String s, String[] words) {
+	int N = s.length();
+	List<Integer> indexes = new ArrayList<Integer>(s.length());
+	if (words.length == 0) {
+		return indexes;
+	}
+	int M = words[0].length();
+	if (N < M * words.length) {
+		return indexes;
+	}
+	int last = N - M + 1;
+	
+	//map each string in words array to some index and compute target counters
+	Map<String, Integer> mapping = new HashMap<String, Integer>(words.length);
+	int [][] table = new int[2][words.length];
+	int failures = 0, index = 0;
+	for (int i = 0; i < words.length; ++i) {
+		Integer mapped = mapping.get(words[i]);
+		if (mapped == null) {
+			++failures;
+			mapping.put(words[i], index);
+			mapped = index++;
+		}
+		++table[0][mapped];
+	}
+	
+	//find all occurrences at string S and map them to their current integer, -1 means no such string is in words array
+	int [] smapping = new int[last];
+	for (int i = 0; i < last; ++i) {
+		String section = s.substring(i, i + M);
+		Integer mapped = mapping.get(section);
+		if (mapped == null) {
+			smapping[i] = -1;
+		} else {
+			smapping[i] = mapped;
+		}
+	}
+	
+	//fix the number of linear scans
+	for (int i = 0; i < M; ++i) {
+		//reset scan variables
+		int currentFailures = failures; //number of current mismatches
+		int left = i, right = i;
+		Arrays.fill(table[1], 0);
+		//here, simple solve the minimum-window-substring problem
+		while (right < last) {
+			while (currentFailures > 0 && right < last) {
+				int target = smapping[right];
+				if (target != -1 && ++table[1][target] == table[0][target]) {
+					--currentFailures;
+				}
+				right += M;
+			}
+			while (currentFailures == 0 && left < right) {
+				int target = smapping[left];
+				if (target != -1 && --table[1][target] == table[0][target] - 1) {
+					int length = right - left;
+					//instead of checking every window, we know exactly the length we want
+					if ((length / M) ==  words.length) {
+						indexes.add(left);
+					}
+					++currentFailures;
+				}
+				left += M;
+			}
+		}
+		
+	}
+	return indexes;
+}
 ```
 ## 89 Palindrome Pairs
 #### _hard_
