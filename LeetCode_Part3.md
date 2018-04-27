@@ -159,29 +159,50 @@ public boolean isSymmetric(TreeNode root) {
     return true;
 }
 ```
-## 116 
+## 116 Maximum Depth of Binary Tree
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：返回二叉树的最大深度。
+#### 思路：最小深度的变种，最后一个return的逻辑很巧妙。
 #### 代码：
 ```
-
+public int maxDepth(TreeNode root) {
+        if(root == null) return 0;
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+        return (left == 0 || right == 0) ?left + right+1:Math.max(left,right)+1;
+    }
 ```
-## 117 
+## 117 Convert Sorted Array to Binary Search Tree
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：给定一个增序数组，返回一个二叉平衡查找数
+#### 思路：递归即可。
 #### 代码：
 ```
-
+public TreeNode sortedArrayToBST(int[] nums) {
+        return formBST(nums, 0, nums.length-1);
+    }
+    
+    public TreeNode formBST(int[] nums, int l, int r){
+        if(l>r) return null;
+        int mid = (l+r+1)/2;
+        TreeNode node = new TreeNode(nums[mid]);
+        if(l==r) return node;
+        node.left = formBST(nums,l,mid-1);
+        node.right = formBST(nums,mid+1,r);
+        return node;
+    }
 ```
-## 118 
+## 118 Same Tree
 #### _easy_
-#### 描述：
-#### 思路：
+#### 描述：判断两个树是否相等
+#### 思路：利用递归。感觉树的题都是可以利用递归来做的。
 #### 代码：
 ```
-
+if(p == null || q == null)
+            return p == q;
+        if(p.val != q.val)
+            return false;
+        return isSameTree(p.left,q.left) &&isSameTree(p.right,q.right);
 ```
 ## 119 
 #### _easy_
@@ -192,6 +213,22 @@ public boolean isSymmetric(TreeNode root) {
 
 ```
 ## 120 
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 121
+#### _easy_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 122 
 #### _easy_
 #### 描述：
 #### 思路：
