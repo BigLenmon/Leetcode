@@ -1548,51 +1548,219 @@ public List<Integer> inorderTraversal(TreeNode root) {
     return list;
 }
 ```
-## 105 
+## 105 Repeated DNA Sequences
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：有一串由字符'A','C','G','T'组成的字符串，求所有出现两次及其以上长度为10的子串。比如十一个‘AAAAAAAAAAA’，返回结果‘AAAAAAAAA’。
+#### 思路：没啥好说的，就是截取长度为十的，然后依次比较。这个是暴力的，下面用了hashset和位运算来节省时间。真的思想巧妙。
 #### 代码：
 ```
+public List<String> findRepeatedDnaSequences(String s) {
+    Set<Integer> words = new HashSet<>();
+    Set<Integer> doubleWords = new HashSet<>();
+    List<String> rv = new ArrayList<>();
+    char[] map = new char[26];
+    //map['A' - 'A'] = 0;
+    map['C' - 'A'] = 1;
+    map['G' - 'A'] = 2;
+    map['T' - 'A'] = 3;
 
+    for(int i = 0; i < s.length() - 9; i++) {
+        int v = 0;
+        for(int j = i; j < i + 10; j++) {
+            v <<= 2;
+            v |= map[s.charAt(j) - 'A'];
+        }
+        if(!words.add(v) && doubleWords.add(v)) {
+            rv.add(s.substring(i, i + 10));
+        }
+    }
+    return rv;
+}
 ```
-## 106 
+## 106 Count Primes
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个整数n，问小于n的数内，有多少质数
+#### 思路：利用n数组来标记n以内非质数的数。不过要记得的是质数不包括1。
 #### 代码：
 ```
-
+public int countPrimes(int n) {
+        boolean[] dp = new boolean[n+1];
+        int count = 0;
+        for(int i = 2;i < n;i++){
+            if(dp[i]==false){
+                count++;
+                for(int j = 2;j*i < n;j++)
+                    dp[j*i]=true;
+            }
+        }
+        return count;
+    }
 ```
-## 107 
+## 107 Valid Sudoku
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个9 * 9的二维数组。判断这个二维数组是不是sudoku的。（Sudoku数组由1到9数字组成，可以允许为空。在每一行，每一列都不包括重复数字。并且将二维数组分成9个3 * 3 的矩形，每个矩形内也不包括相同数字）
+#### 思路：类似于暴力法，但是还是利用了hashset的特征，用string来标注每个元素的位置和值，（4）1表面在第二行有一个4,3（4）表示在第四列有个4.0(2)2，表示在最上面中间的小矩形中有个2。这样就将这些信息放入到hashset中，如果有重复就表明违反规则。
 #### 代码：
 ```
-
+public boolean isValidSudoku(char[][] board) {
+    Set seen = new HashSet();
+    for (int i=0; i<9; ++i) {
+        for (int j=0; j<9; ++j) {
+            if (board[i][j] != '.') {
+                String b = "(" + board[i][j] + ")";
+                if (!seen.add(b + i) || !seen.add(j + b) || !seen.add(i/3 + b + j/3))
+                    return false;
+            }
+        }
+    }
+    return true;
+}
 ```
-## 108 
+## 108 Copy List with Random Pointer
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个链表，这链表中的元素除了有指向下一个元素的指针外，还有个指向链表中任意元素（可以为null）的指针。
+#### 思路：首先想到的是暴力法，先复制完整个链表，并保存新节点和旧节点的映射，和旧节点中random的list。这样在通过一个循环就可以得到新链表中random的值。详细代码见solution2.还有一种想法是先复制链表，但是不是新创立一个链表，而是在复制后的新节点在旧节点后，这样random就可以直接定位到新的节点了，最后在将两个链表解构就行了。厉害了（详细代码见solution1）。
+#### 代码：
+#### solution1
+```
+public RandomListNode copyRandomList(RandomListNode head) {
+	RandomListNode iter = head, next;
+
+	// First round: make copy of each node,
+	// and link them together side-by-side in a single list.
+	while (iter != null) {
+		next = iter.next;
+
+		RandomListNode copy = new RandomListNode(iter.label);
+		iter.next = copy;
+		copy.next = next;
+
+		iter = next;
+	}
+
+	// Second round: assign random pointers for the copy nodes.
+	iter = head;
+	while (iter != null) {
+		if (iter.random != null) {
+			iter.next.random = iter.random.next;
+		}
+		iter = iter.next.next;
+	}
+
+	// Third round: restore the original list, and extract the copy list.
+	iter = head;
+	RandomListNode pseudoHead = new RandomListNode(0);
+	RandomListNode copy, copyIter = pseudoHead;
+
+	while (iter != null) {
+		next = iter.next.next;
+
+		// extract the copy
+		copy = iter.next;
+		copyIter.next = copy;
+		copyIter = copy;
+
+		// restore the original list
+		iter.next = next;
+
+		iter = next;
+	}
+
+	return pseudoHead.next;
+}
+```
+#### solution2
+```
+    public RandomListNode copyRandomList(RandomListNode head) {
+        HashMap<RandomListNode,RandomListNode> oldMapToNew = new HashMap();
+        HashMap<RandomListNode,LinkedList<RandomListNode>> randomList = new HashMap();
+        
+        RandomListNode nowNode = head,preNode = null,newHead = null,newNode = null,randomNode= null;
+        while(nowNode != null){
+            newNode = new RandomListNode(nowNode.label);
+            if(newHead == null){
+                preNode = newNode;
+                newHead = newNode;
+            }
+            else{
+                preNode.next = newNode;
+                preNode = newNode;
+            }
+            oldMapToNew.put(nowNode,newNode);
+            randomNode = nowNode.random;
+            if(randomNode != null){
+                if(randomList.containsKey(randomNode))
+                    randomList.get(randomNode).add(nowNode);
+                else{
+                    LinkedList<RandomListNode> l = new LinkedList();
+                    l.add(nowNode);
+                    randomList.put(randomNode,l);
+                }
+            }
+            nowNode = nowNode.next;
+        }
+        for(RandomListNode r :randomList.keySet()){
+            newNode = oldMapToNew.get(r);
+            for(RandomListNode rr :randomList.get(r))
+                oldMapToNew.get(rr).random = newNode;
+        }
+        return newHead;
+    }
+```
+## 109 Single Number
+#### _medium_
+#### 描述：有一个数组，里面除了一个元素出现了一次以外，其他元素全部出现两次。求只出现一次的元素
+#### 思路：利用两次异或的原理。
 #### 代码：
 ```
-
+    public int singleNumber(int[] nums) {
+        int res = 0;
+        for(int i :nums)
+            res = res ^ i;
+        return res;
+    }
 ```
-## 109 
-#### _medium_
-#### 描述：
-#### 思路：
+## 110 Sudoku Solver
+#### _hard_
+#### 描述：给定一个数独二维列表，求填充这个数独列表
+#### 思路：利用回溯法，每次尝试，直到成功
 #### 代码：
 ```
-
-```
-## 110 
-#### _medium_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
+public void solveSudoku(char[][] board) {
+        if(board == null || board.length == 0)
+            return;
+        solve(board);
+    }
+    
+    public boolean solve(char[][] board){
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[0].length; j++){
+                if(board[i][j] == '.'){
+                    for(char c = '1'; c <= '9'; c++){//trial. Try 1 through 9
+                        if(isValid(board, i, j, c)){
+                            board[i][j] = c; //Put c for this cell
+                            
+                            if(solve(board))
+                                return true; //If it's the solution return true
+                            else
+                                board[i][j] = '.'; //Otherwise go back
+                        }
+                    }
+                    
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    private boolean isValid(char[][] board, int row, int col, char c){
+        for(int i = 0; i < 9; i++) {
+            if(board[i][col] != '.' && board[i][col] == c) return false; //check row
+            if(board[row][i] != '.' && board[row][i] == c) return false; //check column
+            if(board[3 * (row / 3) + i / 3][ 3 * (col / 3) + i % 3] != '.' && 
+board[3 * (row / 3) + i / 3][3 * (col / 3) + i % 3] == c) return false; //check 3*3 block
+        }
+        return true;
+    }
 ```
