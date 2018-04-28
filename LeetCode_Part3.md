@@ -204,21 +204,56 @@ if(p == null || q == null)
             return false;
         return isSameTree(p.left,q.left) &&isSameTree(p.right,q.right);
 ```
-## 119 
-#### _easy_
-#### 描述：
-#### 思路：
+## 119 Binary Tree Zigzag Level Order Traversal
+#### _medium_
+#### 描述：给定一个二叉树，返回层次遍历，不过按照Z字形遍历。
+#### 思路：递归实现。利用一个%2。实现该功能。
 #### 代码：
 ```
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> res = new LinkedList();
+        helper(res,root,0);
+        return res;
+    }
+    public void helper(List<List<Integer>> res,TreeNode root,int level){
+        if(root == null)
+            return;
+        if(res.size() <= level)
+            res.add(new LinkedList<Integer>());
+        if(level % 2 == 0)
+            res.get(level).add(root.val);
+        
+        else
+            res.get(level).add(0,root.val);
 
+        helper(res,root.left,level+1);
+            helper(res,root.right,level+1);
+    }
 ```
-## 120 
-#### _easy_
-#### 描述：
-#### 思路：
+## 120 Construct Binary Tree from Inorder and Postorder Traversal
+#### _medium_
+#### 描述：给定一个树的中序和后序遍历，求这个树
+#### 思路：利用递归，详细见代码。
 #### 代码：
 ```
-
+public TreeNode buildTree(int[] inorder, int[] postorder) {
+        TreeNode nowNode = buildChildTree(postorder,postorder.length -1,inorder,0,postorder.length -1);
+        return nowNode;
+    }
+    public TreeNode buildChildTree(int[] postorder,int postIndex,int[] inorder,int start,int end){
+        TreeNode nowNode = null;
+        int flag = -1;
+        for(int i = start;i <= end;i++){
+            if(postorder[postIndex] == inorder[i])
+                flag = i;
+        }
+        if(flag >= 0){
+            nowNode = new TreeNode(inorder[flag]);
+            nowNode.left = buildChildTree(postorder,postIndex+flag-end-1,inorder,start,flag -1);
+            nowNode.right = buildChildTree(postorder,postIndex-1,inorder,flag + 1,end);
+        }
+        return nowNode;
+    }
 ```
 ## 121
 #### _easy_
