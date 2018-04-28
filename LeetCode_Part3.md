@@ -255,16 +255,117 @@ public TreeNode buildTree(int[] inorder, int[] postorder) {
         return nowNode;
     }
 ```
-## 121
-#### _easy_
+## 121 Path Sum II
+#### _medium_
+#### 描述：给定一个二叉树和一指定的数sum。求出所以从根节点到叶子节点路径和为sum的路径。
+#### 思路：递归调用，回溯法。有两个值得注意的地方，第一必须要到达根节点，才能结束（因为有负数的存在所以）。第二要复制list，采用new ArrayList<>(list)方法。
+#### 代码：
+```
+public List<List<Integer>> pathSum(TreeNode root, int sum) {
+	List<List<Integer>> res = new ArrayList<>();
+	List<Integer> list = new ArrayList<>();
+	helper(res, list, root, sum);
+	return res;
+}
+private void helper(List<List<Integer>> res, List<Integer> list, TreeNode root, int sum) {
+	if (root == null) return;
+	list.add(root.val);
+	if (root.left == null && root.right == null && root.val == sum) {
+		res.add(new ArrayList<>(list));
+	}
+	helper(res, list, root.left, sum - root.val);
+	helper(res, list, root.right, sum - root.val);
+	list.remove(list.size() - 1);
+}
+```
+## 122 Populating Next Right Pointers in Each Node
+#### _medium_
+#### 描述：给定一个二叉树，节点中多了一个指针，指向层次遍历中的后一个元素。每层的最后一个指向null
+#### 思路：简单的迭代，层序遍历的变种。不过下面代码就不用额外的空间。
+#### 代码：
+```
+    public void connect(TreeLinkNode root) {
+        while(root != null){
+            TreeLinkNode tempChild = new TreeLinkNode(0);
+            TreeLinkNode currentChild = tempChild;
+            while(root!=null){
+                if(root.left != null) { currentChild.next = root.left; currentChild = currentChild.next;}
+                if(root.right != null) { currentChild.next = root.right; currentChild = currentChild.next;}
+                root = root.next;
+            }
+            root = tempChild.next;
+        }
+     }
+```
+## 123 Unique Binary Search Trees
+#### _medium_
+#### 描述：给定数n，问n个节点的二分搜素数有多少种
+#### 思路：动态规划，在part1里有更难的，问的是列出这些情况。
+#### 代码：
+```
+    public int numTrees(int n) {
+        int [] G = new int[n+1];
+        G[0] = G[1] = 1;
+    
+        for(int i=2; i<=n; ++i) {
+    	    for(int j=1; j<=i; ++j) {
+    		G[i] += G[j-1] * G[i-j];
+    	    }
+        }
+
+        return G[n];
+    }
+```
+## 124 
+#### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
 ```
 
 ```
-## 122 
-#### _easy_
+## 125 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 126 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 127 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 128 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 129 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 130 
+#### _medium_
 #### 描述：
 #### 思路：
 #### 代码：
