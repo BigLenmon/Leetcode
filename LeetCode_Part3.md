@@ -281,7 +281,7 @@ private void helper(List<List<Integer>> res, List<Integer> list, TreeNode root, 
 ## 122 Populating Next Right Pointers in Each Node
 #### _medium_
 #### 描述：给定一个二叉树，节点中多了一个指针，指向层次遍历中的后一个元素。每层的最后一个指向null
-#### 思路：简单的迭代，层序遍历的变种。不过下面代码就不用额外的空间。
+#### 思路：简单的迭代，层序遍历的变种。
 #### 代码：
 ```
     public void connect(TreeLinkNode root) {
@@ -316,45 +316,167 @@ private void helper(List<List<Integer>> res, List<Integer> list, TreeNode root, 
         return G[n];
     }
 ```
-## 124 
+## 124 Sum Root to Leaf Numbers
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个二叉树，返回所有从根节点到叶子节点的路径之和
+#### 思路：递归。
 #### 代码：
 ```
-
+ public int sumNumbers(TreeNode root) {
+        List<Integer> res = new LinkedList();
+        helper(root,res,0);
+        int ans=0;
+        for(int i : res)
+            ans += i;
+        return ans;
+    }
+    public void helper(TreeNode root,List<Integer> res,int sum){
+        if(root == null)
+            return ;
+        if(root.left == null && root.right == null)
+            res.add(sum *10 + root.val);
+        else{
+            if(root.left != null)
+                helper(root.left,res,sum*10+ root.val);
+            if(root.right != null)
+                helper(root.right,res,sum*10+ root.val);
+        } 
+    }
 ```
-## 125 
+## 125 Binary Search Tree Iterator
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个二叉平衡搜索树，求实现next，和hasnext方法
+#### 思路：我的思路是利用中序遍历（solution2）。另一种思路是利用栈来实现（solution1）。不过我的在构造函数上耗时较多，利用栈的方法在next上耗时较多。
+#### 代码：
+#### solution 1
+```
+public class BSTIterator {
+    private Stack<TreeNode> stack = new Stack<TreeNode>();
+    
+    public BSTIterator(TreeNode root) {
+        pushAll(root);
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return !stack.isEmpty();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode tmpNode = stack.pop();
+        pushAll(tmpNode.right);
+        return tmpNode.val;
+    }
+    
+    private void pushAll(TreeNode node) {
+        for (; node != null; stack.push(node), node = node.left);
+    }
+}
+```
+#### solutin 2
+```
+public class BSTIterator {
+    List<Integer> inorder;
+    int nowIndex;
+    public BSTIterator(TreeNode root) {
+        inorder = new LinkedList();
+        inorderFunction(root);
+        nowIndex = 0;
+    }
+    public void inorderFunction(TreeNode root){
+        if(root == null)
+            return;
+        inorderFunction(root.left);
+        inorder.add(root.val);
+        inorderFunction(root.right);
+ 
+    }
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return nowIndex < inorder.size();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        return inorder.get(nowIndex++);
+    }
+}
+```
+## 126 Binary Tree Right Side View
+#### _medium_
+#### 描述：找到每层的最后一个元素
+#### 思路：一开始我以为只要从右子树开始就成，结果发现当右子树都为的左右节点都为空时，这一层的最后一个节点在左子树上面。所以还是利用层次遍历来写。最后一定要记得root为null的情况。
 #### 代码：
 ```
-
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> res = new LinkedList<Integer>();
+        if(root == null)
+            return res;
+        LinkedList<TreeNode> queue =new LinkedList<TreeNode>();
+        queue.add(root);
+        while(!queue.isEmpty()){
+            int num = queue.size();
+            int last = queue.getLast().val;
+            res.add(last);
+            for(int i = 1;i <= num;i++){
+                TreeNode head = queue.pop();
+                if(head.left != null)queue.add(head.left);
+                if(head.right != null )queue.add(head.right);
+            }
+        }
+        return res;
+    }
 ```
-## 126 
+## 127 Validate Binary Search Tree
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：判断一个树是否是二叉搜索树。
+#### 思路：利用前序，中序遍历即可判断。我一开始打算用递归（不是遍历的递归）来写，就是先判断父节点，在判断左右节点。这个方法一点也不好。
 #### 代码：
 ```
-
+public boolean isValidBST (TreeNode root){
+		   Stack<TreeNode> stack = new Stack<TreeNode> ();
+		   TreeNode cur = root ;
+		   TreeNode pre = null ;		   
+		   while (!stack.isEmpty() || cur != null) {			   
+			   if (cur != null) {
+				   stack.push(cur);
+				   cur = cur.left ;
+			   } else {				   
+				   TreeNode p = stack.pop() ;
+				   if (pre != null && p.val <= pre.val) {					   
+					   return false ;
+				   }				   
+				   pre = p ;					   
+				   cur = p.right ;
+			   }
+		   }
+		   return true ; 
+	   }
 ```
-## 127 
+## 128 House Robber III
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：依然是house robber，这次是一个二叉树。
+#### 思路：依然是递归公式依然没有变，dp[i]= Math.max(dp[i-1],dp[i-2]+num[i]);只不过是变成了祖父节点和父节点和当前节点。用递归可以做，但是还是用动态规划减轻复杂度。
 #### 代码：
 ```
+public int rob(TreeNode root) {
+    int[] res = robSub(root);
+    return Math.max(res[0], res[1]);
+}
 
-```
-## 128 
-#### _medium_
-#### 描述：
-#### 思路：
-#### 代码：
-```
+private int[] robSub(TreeNode root) {
+    if (root == null) return new int[2];
+    
+    int[] left = robSub(root.left);
+    int[] right = robSub(root.right);
+    int[] res = new int[2];
 
+    res[0] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+    res[1] = root.val + left[0] + right[0];
+    
+    return res;
+}
 ```
 ## 129 
 #### _medium_
@@ -365,6 +487,46 @@ private void helper(List<List<Integer>> res, List<Integer> list, TreeNode root, 
 
 ```
 ## 130 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 131 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 132 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 133 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 134 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 135 
 #### _medium_
 #### 描述：
 #### 思路：
