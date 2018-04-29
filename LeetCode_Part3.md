@@ -478,13 +478,45 @@ private int[] robSub(TreeNode root) {
     return res;
 }
 ```
-## 129 
-#### _medium_
-#### 描述：
-#### 思路：
+## 129 Binary Tree Postorder Traversal
+#### _hard_
+#### 描述：后序遍历二叉树
+#### 思路：详细见代码。
 #### 代码：
 ```
-
+private void traversePartPostorder(BinaryNode<T> rootNode,  
+	Stack<BinaryNode<T>> stack) {  
+	BinaryNode<T> currentNode = rootNode;  
+	while (currentNode != null) {  
+		if(currentNode.getLeftChild() != null){  
+		//当前节点有左孩子  
+			if(currentNode.getRightChild() != null){  
+			//如果当前节点有右孩子优先让右孩子进入  
+				stack.push(currentNode.getRightChild());  
+			}  
+			stack.push(currentNode.getLeftChild());  
+		}else{  
+			stack.push(currentNode.getRightChild());  
+		}             
+		currentNode = stack.peek();  
+	}  
+	//将最后放进去的空节点弹出  
+	stack.pop();  
+}  
+public void postorderTraverse() {  
+	Stack<BinaryNode<T>> stack = new Stack<BinaryNode<T>>();  
+	BinaryNode<T> currentNode = root;  
+	if(currentNode != null){  
+		stack.push(currentNode);  
+	}  
+	while(!stack.isEmpty()){  
+		if((stack.peek().getLeftChild() != currentNode) && (stack.peek().getRightChild() != currentNode)){  
+			traversePartPostorder(stack.peek(),stack);  
+		}  
+		currentNode = stack.pop();  
+		System.out.println(currentNode.getData());  
+	}  
+}  
 ```
 ## 130 
 #### _medium_
