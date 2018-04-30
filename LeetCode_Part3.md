@@ -518,21 +518,77 @@ public void postorderTraverse() {
 	}  
 }  
 ```
-## 130 
-#### _medium_
-#### 描述：
-#### 思路：
+## 130 Binary Tree Maximum Path Sum
+#### _hard_
+#### 描述：给定一个二叉树，求权值最大的路径。
+#### 思路：这题和之前有一道题（求数组中的最大子数组的和）可能有点相同，所以我之前的思路全部往那道题走了。但是实际上是不一样的，因为数组中的数组扩张只有一种路径，而这题有四种路径。所以不行。所以正确的思路是利用分治的方法，有一个子方法求左右子树的以左右子节点为头的最大路径和，这样就可以更新最大路径长（左右子树子路径和加上根节点的值），另外要返回以根节点为头节点的最大路径和，这样就得选择左右子路径中最大的一个加上根节点的值。
 #### 代码：
 ```
-
+public class Solution {
+    int maxValue;
+    
+    public int maxPathSum(TreeNode root) {
+        maxValue = Integer.MIN_VALUE;
+        maxPathDown(root);
+        return maxValue;
+    }
+    
+    private int maxPathDown(TreeNode node) {
+        if (node == null) return 0;
+        int left = Math.max(0, maxPathDown(node.left));
+        int right = Math.max(0, maxPathDown(node.right));
+        maxValue = Math.max(maxValue, left + right + node.val);
+        return Math.max(left, right) + node.val;
+    }
+}
 ```
-## 131 
-#### _medium_
-#### 描述：
-#### 思路：
+## 131 Recover Binary Search Tree
+#### _hard_
+#### 描述：在一个二叉搜索树中，有两个节点错误的交换了，求将这二叉搜索恢复正常。
+#### 思路：主要利用中序遍历，找到两个位置错误的节点。我之前的思路是先打印出该二叉树的中序遍历，然后找到错误的节点位置，然后遍历二叉树交换错误的值。下面代码就很巧妙，在中序遍历二叉树的方法里顺便找到那两个错误节点，其中preElemet是二叉树中序遍历root节点前面一个节点，如果位置没有出错的话，preElement的值是小于root的值的。另外下面代码里在找到第二个节点判断方法要注意一点，不是以secondElement为空来判断的，因为中序遍历里第二个位置错误的节点是最后一个小于前面节点值的数。
 #### 代码：
 ```
+public class Solution {
+    
+    TreeNode firstElement = null;
+    TreeNode secondElement = null;
+    // The reason for this initialization is to avoid null pointer exception in the first comparison when prevElement has not been initialized
+    TreeNode prevElement = new TreeNode(Integer.MIN_VALUE);
+    
+    public void recoverTree(TreeNode root) {
+        
+        // In order traversal to find the two elements
+        traverse(root);
+        
+        // Swap the values of the two nodes
+        int temp = firstElement.val;
+        firstElement.val = secondElement.val;
+        secondElement.val = temp;
+    }
+    
+    private void traverse(TreeNode root) {
+        
+        if (root == null)
+            return;
+            
+        traverse(root.left);
+        
+        // Start of "do some business", 
+        // If first element has not been found, assign it to prevElement (refer to 6 in the example above)
+        if (firstElement == null && prevElement.val >= root.val) {
+            firstElement = prevElement;
+        }
+    
+        // If first element is found, assign the second element to the root (refer to 2 in the example above)
+        if (firstElement != null && prevElement.val >= root.val) {
+            secondElement = root;
+        }        
+        prevElement = root;
 
+        // End of "do some business"
+
+        traverse(root.right);
+}
 ```
 ## 132 
 #### _medium_
