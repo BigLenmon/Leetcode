@@ -590,13 +590,76 @@ public class Solution {
         traverse(root.right);
 }
 ```
-## 132 
+## 132 Maximum XOR of Two Numbers in an Array
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组，求数组内任意两个数字的最大异或值。
+#### 思路：有两种方法，第一种思想是：变量mask得到每个变量的前i个值，然后tmp用于得到最新一位是否可以为1。最后查看是否有任意两个数字的前i位的异或为tmp。这样一直遍历到最小位。（solution1,这种类型的题比较少，比较难想到）。第二种是利用字典树的方法，将每一位都当做树的两个分支，然后遍历数组中的每一位元素，找到和他与或最大的数。
 #### 代码：
+#### solution 1
 ```
-
+public class Solution {
+    public int findMaximumXOR(int[] nums) {
+        int max = 0, mask = 0;
+        for(int i = 31; i >= 0; i--){
+            mask = mask | (1 << i);
+            Set<Integer> set = new HashSet<>();
+            for(int num : nums){
+                set.add(num & mask);
+            }
+            int tmp = max | (1 << i);
+            for(int prefix : set){
+                if(set.contains(tmp ^ prefix)) {
+                    max = tmp;
+                    break;
+                }
+            }
+        }
+        return max;
+    }
+}
+```
+#### solution2
+```
+    class Trie {
+        Trie[] children;
+        public Trie() {
+            children = new Trie[2];
+        }
+    }
+    
+    public int findMaximumXOR(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        // Init Trie.
+        Trie root = new Trie();
+        for(int num: nums) {
+            Trie curNode = root;
+            for(int i = 31; i >= 0; i --) {
+                int curBit = (num >>> i) & 1;
+                if(curNode.children[curBit] == null) {
+                    curNode.children[curBit] = new Trie();
+                }
+                curNode = curNode.children[curBit];
+            }
+        }
+        int max = Integer.MIN_VALUE;
+        for(int num: nums) {
+            Trie curNode = root;
+            int curSum = 0;
+            for(int i = 31; i >= 0; i --) {
+                int curBit = (num >>> i) & 1;
+                if(curNode.children[curBit ^ 1] != null) {
+                    curSum += (1 << i);
+                    curNode = curNode.children[curBit ^ 1];
+                }else {
+                    curNode = curNode.children[curBit];
+                }
+            }
+            max = Math.max(curSum, max);
+        }
+        return max;
+    }
 ```
 ## 133 
 #### _medium_
