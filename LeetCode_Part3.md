@@ -661,7 +661,135 @@ public class Solution {
         return max;
     }
 ```
-## 133 
+## 133 Number of Islands
+#### _medium_
+#### 描述：给定一个二维数组，里面全是1或者0，给出一个定义：当1的上下左右有其他1就认为这两个1在一个联通分量里，问该二维数组由多少联通分量。
+#### 思路：用回溯法，碰到1就将同在一个联通分量的1全部改为0。这样就可以得到结果了。
+#### 代码：
+```
+private int n;
+private int m;
+
+public int numIslands(char[][] grid) {
+    int count = 0;
+    n = grid.length;
+    if (n == 0) return 0;
+    m = grid[0].length;
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < m; j++)
+            if (grid[i][j] == '1') {
+                DFSMarking(grid, i, j);
+                ++count;
+            }
+    }    
+    return count;
+}
+
+private void DFSMarking(char[][] grid, int i, int j) {
+    if (i < 0 || j < 0 || i >= n || j >= m || grid[i][j] != '1') return;
+    grid[i][j] = '0';
+    DFSMarking(grid, i + 1, j);
+    DFSMarking(grid, i - 1, j);
+    DFSMarking(grid, i, j + 1);
+    DFSMarking(grid, i, j - 1);
+}
+```
+## 134 Convert Sorted List to Binary Search Tree
+#### _medium_
+#### 描述：给定一个排好序的链表，根据这个链表构建一个平衡二叉搜索树
+#### 思路：因为是排好序的链表，所以中间节点就是树的根节点。然后根据这个方法依次处理链表的左半部，和右半边。（求链表的中间节点用fast，slow方法）
+#### 代码：
+```
+public TreeNode sortedListToBST(ListNode head) {
+    if(head==null) return null;
+    return toBST(head,null);
+}
+public TreeNode toBST(ListNode head, ListNode tail){
+    ListNode slow = head;
+    ListNode fast = head;
+    if(head==tail) return null;
+    
+    while(fast!=tail&&fast.next!=tail){
+        fast = fast.next.next;
+        slow = slow.next;
+    }
+    TreeNode thead = new TreeNode(slow.val);
+    thead.left = toBST(head,slow);
+    thead.right = toBST(slow.next,tail);
+    return thead;
+}
+```
+## 135 Surrounded Regions
+#### _medium_
+#### 描述：给定一个二维字符数组，里面元素有X和O组成。求按照以下要求来修改数组：当数组里的O组成的块被X包围时，将这个块里的O改为X。当O元素位置为边界时，不算被包围。
+#### 思路：回溯法，从数组边界的O元素开始遍历，将从边界O开始的块全部改成* 符号，最后再次遍历全部元素，将O改成X，* 改成O。我想法是遍历数组的元素的O元素，结果发现不好做，还是从边界的O元素开始遍历好一点。
+#### 代码：
+```
+    int [] dirX={-1,0,1,0};
+    int [] dirY={0,-1,0,1};
+    public void solve(char[][] board) {
+        if (board == null || board.length ==0 || board[0].length==0) return;
+         int m = board.length;
+         int n = board[0].length;
+        
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || i == m-1 || j == 0 || j == n-1) {
+                    if (board[i][j] == 'O') {
+                       this.explore(i,j,m,n,board);
+                    }
+                }
+            }
+        }
+
+       for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == 'O') {
+                    board[i][j] = 'X';
+                }
+                else if (board[i][j] == '*'){              
+                    board[i][j] = 'O';
+                }
+            }
+        }   
+    }
+    public void explore(int x, int y, int row, int col ,char[][] grid){
+        if(!shouldExplore(x,y,row,col,grid)){
+            return;   
+        }
+        grid[x][y]='*';
+           for(int i=0;i<4;i++){
+               this.explore(x+ dirX[i],y+dirY[i], row, col,grid);
+           }
+    }
+    public boolean shouldExplore(int x, int y, int row, int col,char[][] grid){
+      if(x>=0 && x<row && y>=0 && y<col && grid[x][y]=='O'){          
+                return true;
+            }
+            return false;
+        }  
+```
+## 136 Clone Graph
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+    public Map<Integer, UndirectedGraphNode> hashMap = new HashMap<Integer, UndirectedGraphNode>();
+    
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        if (node == null) return null;
+        
+        UndirectedGraphNode clone = new UndirectedGraphNode(node.label);
+        hashMap.put(node.label, clone);
+        for (UndirectedGraphNode neighbor: node.neighbors) {
+            UndirectedGraphNode neighborClone = hashMap.get(neighbor.label);
+            clone.neighbors.add(neighborClone == null ? cloneGraph(neighbor) : neighborClone);
+        }
+        return clone;
+    }
+```
+## 137 
 #### _medium_
 #### 描述：
 #### 思路：
@@ -669,7 +797,7 @@ public class Solution {
 ```
 
 ```
-## 134 
+## 138 
 #### _medium_
 #### 描述：
 #### 思路：
@@ -677,7 +805,55 @@ public class Solution {
 ```
 
 ```
-## 135 
+## 139 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 140 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 141 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 142 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 143 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 144 
+#### _medium_
+#### 描述：
+#### 思路：
+#### 代码：
+```
+
+```
+## 145 
 #### _medium_
 #### 描述：
 #### 思路：
