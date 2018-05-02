@@ -771,8 +771,8 @@ public TreeNode toBST(ListNode head, ListNode tail){
 ```
 ## 136 Clone Graph
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个图结构，求该图的复制
+#### 思路：利用一个hashMap来保存该图的新节点，结果回溯法逐个复制图的结构。
 #### 代码：
 ```
     public Map<Integer, UndirectedGraphNode> hashMap = new HashMap<Integer, UndirectedGraphNode>();
@@ -789,13 +789,29 @@ public TreeNode toBST(ListNode head, ListNode tail){
         return clone;
     }
 ```
-## 137 
+## 137 Majority Element II
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个长度为n的数组，求数组内重复次数大于n/3的数。
+#### 思路：和求重复次数大于 n/2的方法类似，设置两个变量，来存储可能重复次数大于n/3的数。如果不等于就将次数减一，如果为零就替换变量。详细见代码。
 #### 代码：
 ```
-
+def majorityElement(self, nums):
+    if not nums:
+        return []
+    count1, count2, candidate1, candidate2 = 0, 0, 0, 1
+    for n in nums:
+        if n == candidate1:
+            count1 += 1
+        elif n == candidate2:
+            count2 += 1
+        elif count1 == 0:
+            candidate1, count1 = n, 1
+        elif count2 == 0:
+            candidate2, count2 = n, 1
+        else:
+            count1, count2 = count1 - 1, count2 - 1
+    return [n for n in (candidate1, candidate2)
+                    if nums.count(n) > len(nums) // 3]
 ```
 ## 138 
 #### _medium_
