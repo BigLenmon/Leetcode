@@ -813,29 +813,71 @@ def majorityElement(self, nums):
     return [n for n in (candidate1, candidate2)
                     if nums.count(n) > len(nums) // 3]
 ```
-## 138 
+## 138 Minimum Size Subarray Sum
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组和一个正整数sum，问数组内大于等于sum的连续子数组的最短长度是多少？
+#### 思路：利用两个点表示子数组的左边和右边，右边每次更新一个数，左边界往右边走，同时更新最短长度。
 #### 代码：
 ```
-
+public int minSubArrayLen(int s, int[] a) {
+  if (a == null || a.length == 0)
+    return 0;
+  
+  int i = 0, j = 0, sum = 0, min = Integer.MAX_VALUE;
+  
+  while (j < a.length) {
+    sum += a[j++];
+    
+    while (sum >= s) {
+      min = Math.min(min, j - i);
+      sum -= a[i++];
+    }
+  }
+  
+  return min == Integer.MAX_VALUE ? 0 : min;
+}
 ```
-## 139 
+## 139 Remove Nth Node From End of List
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个链表，删除倒数第n个节点。
+#### 思路：设立两个指针，前一个先往前走n步，最后在一起走到null。这个后面走的就是倒数第n个节点。链表问题可以考虑一下用两个指针跑，用这种解法的题也不少，比如判断链表是否有环，得到链表中间节点等待。
 #### 代码：
 ```
-
+public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode first = head;
+        ListNode second = dummy;
+        while(first != null){
+            if(n-- <= 0)
+                second = second.next;
+            first = first.next;    
+        }
+        second.next = second.next.next;
+        return dummy.next;
+    }
 ```
-## 140 
+## 140 Partition List
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个链表和一个指定值n，将链表小于n的放在左侧，大于等于的放在右侧，但是不能改变链表的相对顺序
+#### 思路：用两个链表来存储小于和大于等于的。不过最重要的点是两个链表可以一开始创建一个头结点，这样会少好多代码，更加简洁。
 #### 代码：
 ```
-
+ListNode dummy1 = new ListNode(0), dummy2 = new ListNode(0);  //dummy heads of the 1st and 2nd queues
+    ListNode curr1 = dummy1, curr2 = dummy2;      //current tails of the two queues;
+    while (head!=null){
+        if (head.val<x) {
+            curr1.next = head;
+            curr1 = head;
+        }else {
+            curr2.next = head;
+            curr2 = head;
+        }
+        head = head.next;
+    }
+    curr2.next = null;          //important! avoid cycle in linked list. otherwise u will get TLE.
+    curr1.next = dummy2.next;
+    return dummy1.next;
 ```
 ## 141 
 #### _medium_
