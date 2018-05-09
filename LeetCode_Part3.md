@@ -879,29 +879,88 @@ ListNode dummy1 = new ListNode(0), dummy2 = new ListNode(0);  //dummy heads of t
     curr1.next = dummy2.next;
     return dummy1.next;
 ```
-## 141 
-#### _medium_
-#### 描述：
-#### 思路：
+## 141 Linked List Cycle
+#### _easy_
+#### 描述：给定一个链表，问是否存在一个环
+#### 思路：用两个指针，一个走两步，一个走一步。如果存在环，则两个指针就有存在相等的可能。下面代码我写的，我觉得有一部分写的不错。
 #### 代码：
 ```
-
+    public boolean hasCycle(ListNode head) {
+        if(head == null)
+            return false;
+        ListNode fast = head;
+        ListNode slow = head;
+        do{
+            if(fast == null || (fast = fast.next) == null )
+                break;
+            fast = fast.next;
+            slow = slow.next;
+        }while(fast != slow);
+        return fast == slow;
+    }
 ```
-## 142 
+## 142 Linked List Cycle II
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个链表，如果这个链表存在环，则返回环的起始地方，没有环则返回null。
+#### 思路：利用上一题的算法，得到相遇的节点，然后两个指针，一个是相遇的节点，一个是head，两个节点往后移动。相等则表明是起始地方。
 #### 代码：
 ```
-
+    public ListNode detectCycle(ListNode head) {
+        ListNode meet = meetNode(head);
+        if(meet == null)
+            return null;
+        while(meet != head){
+            meet = meet.next;
+            head = head.next;
+        }
+        return meet;
+    }
+    public ListNode meetNode(ListNode head){
+        ListNode fast = head;
+        ListNode slow = head;
+        do{
+            if(fast == null || (fast = fast.next) == null)
+                break;
+            fast = fast.next;
+            slow = slow.next;
+        }while(fast != slow);
+        return fast;
+    }
 ```
-## 143 
+## 143 Rotate List
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个链表和一个给定的数n，n表示依n次将末尾的节点头插。
+#### 思路：找到倒数n % length个节点，让这个节点作为头结点。要注意的是先得求得链表长度length，像我之前是偷懒没有写，直接用n--来做，结果超时了。。。
 #### 代码：
 ```
-
+    public ListNode rotateRight(ListNode head, int k) {
+        if(k == 0 ||head == null||head.next == null)
+            return head;
+        ListNode fast = head;
+        ListNode slow = head;
+        ListNode temp = head;
+        int length= 0;
+        while(temp != null){
+            temp = temp.next;
+            length ++;
+        }
+        k = k % length;
+        while(k > 0){
+            fast = fast.next;
+            k--;
+        }
+        if(fast == head)
+            return head;
+        while(fast.next != null){
+            fast = fast.next;
+            slow = slow.next;
+        }
+        fast.next = head;
+        head = slow.next;
+        slow.next = null;
+        
+        return head;
+    }
 ```
 ## 144 
 #### _medium_
