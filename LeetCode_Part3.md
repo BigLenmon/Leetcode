@@ -962,21 +962,94 @@ ListNode dummy1 = new ListNode(0), dummy2 = new ListNode(0);  //dummy heads of t
         return head;
     }
 ```
-## 144 
-#### _medium_
-#### 描述：
-#### 思路：
+## 144 IP to CIDR
+#### _easy_  （个人认为是hard难度）
+#### 描述：给定一个ip值，和固定值n，返回一连串ip和子网掩码，这些结果代表n个ip地址（从给定ip地址算起）
+#### 思路：整体思路是先找到从右边数第一个为一的数，这样加上遮掩到这位的子网掩码的网络就能从当前ip算起到这位能组成最大的ip个数。同时找到之后还得改变着数，从而找到下一个右边为一的数。和人为的做法类似。但是就是难写难想。记得其中的几个技巧，X& -X得到右边起第一个1（比如x为1000000100 x & -x 为0000000100。）
 #### 代码：
 ```
-
+class Solution {  
+    public  List<String> ipToCIDR(java.lang.String ip, int range) {  
+        long x = 0;  
+        //获得一个ip地址每一部分  
+        String[] ips = ip.split("\\.");  
+        //将整ip地址看为一个整体，求出整体的int表示  
+        for (int i = 0; i < ips.length; ++i) {  
+            x = Integer.parseInt(ips[i]) + x * 256;  
+        }  
+        List<String> ans = new ArrayList<>();  
+        while (range > 0) {  
+            //求出二进制表示下的最低有效位的位数能表示的地址的数量  
+            //如果为奇数，则=1，即以原单个起始ip地址为第一块  
+            //如果为偶数，则二进制表示下的最低有效位的位数能表示的地址的数量  
+            long step = x & -x;  
+            //如果大于range，则需要缩小范围  
+            while (step > range) step /= 2;  
+            //不大于需要的range，开始处理  
+            //求出现在能表示的step个地址的地址块  
+            ans.add(longToIP(x, (int)step));  
+            //x加上以求出的地址块  
+            x += step;  
+            //range减去以表示的地址块  
+            range -= step;  
+        }//直到range<0  
+        return ans;  
+    }  
+    static String longToIP(long x, int step) {  
+        int[] ans = new int[4];  
+        //&255操作求出后8位十进制表示  
+        ans[0] = (int) (x & 255);  
+        //右移8位，即求下一个块  
+        x >>= 8;  
+        ans[1] = (int) (x & 255);  
+        x >>= 8;  
+        ans[2] = (int) (x & 255);  
+        x >>= 8;  
+        ans[3] = (int) x;  
+        int len = 33;  
+        //每一位就可以表示2个  
+        while (step > 0) {  
+            len --;  
+            step /= 2;  
+        }  
+        return ans[3] + "." + ans[2] + "." + ans[1] + "." + ans[0] + "/" + len;  
+    }  
+} 
 ```
-## 145 
+## 145 Permutations
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组，数组内每个元素都不一样，数组内元素组成的排列有多少种？
+#### 思路：回溯法，递归方法里通过和第一个元素交换，避免取得相同元素。我一开始的想法是将数组转换成list这样就能比较方便的去除已取得的元素。
 #### 代码：
 ```
+    public  List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> list = new LinkedList();
+	    if(nums!=null&&nums.length>0) {
+		    PermutationHelper(nums, 0, list);
+	    }
+	    return list;
+    }
 
+    private  void PermutationHelper(int[] nums, int i, List<List<Integer>> list) {
+	    if(i==nums.length-1) {
+		    List<Integer> l=new ArrayList<>();
+		    for (int k : nums) {
+			    l.add(k);
+		    }
+		    list.add(l);
+	    }else {
+		    for(int j=i;j<nums.length;j++) {
+			    swap(nums, i, j);
+			    PermutationHelper(nums, i+1, list);
+		        swap(nums, i, j);
+            }
+        }
+    }
+    public  void swap(int array[],int i,int j) {
+	    int temp=array[j];
+	    array[j]=array[i];
+	    array[i]=temp;
+    }
 ```
 ## 146 
 #### _medium_
