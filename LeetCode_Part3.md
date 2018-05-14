@@ -1138,19 +1138,130 @@ public List<List<Integer>> subsetsWithDup(int[] nums) {
 ```
 ## 149 Palindrome Partitioning
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个字符串，返回该字符串的子串全部是回文串的组合，比如aab，则返回[a,a,b],[aa,b];
+#### 思路：虽然看起来难，但是是回溯法的简单应用，首先从起始字符开始算起，得到已这个字符为起始的回文子串，然后从该子串末尾位置重新开始回溯。
 #### 代码：
 ```
-
+List<List<String>> resultLst;
+	    ArrayList<String> currLst;
+	    public List<List<String>> partition(String s) {
+	        resultLst = new ArrayList<List<String>>();
+	        currLst = new ArrayList<String>();
+	        backTrack(s,0);
+	        return resultLst;
+	    }
+	    public void backTrack(String s, int l){
+	        if(currLst.size()>0 //the initial str could be palindrome
+	            && l>=s.length()){
+	                List<String> r = (ArrayList<String>) currLst.clone();
+	                resultLst.add(r);
+	        }
+	        for(int i=l;i<s.length();i++){
+	            if(isPalindrome(s,l,i)){
+	                if(l==i)
+	                    currLst.add(Character.toString(s.charAt(i)));
+	                else
+	                    currLst.add(s.substring(l,i+1));
+	                backTrack(s,i+1);
+	                currLst.remove(currLst.size()-1);
+	            }
+	        }
+	    }
+	    public boolean isPalindrome(String str, int l, int r){
+	        if(l==r) return true;
+	        while(l<r){
+	            if(str.charAt(l)!=str.charAt(r)) return false;
+	            l++;r--;
+	        }
+	        return true;
+	    }
 ```
 ## 150 Permutations II
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个数组，返回不同的排列的结果。比如（1，1,2）为（1,1,2），（1,2,1），（2,1,1）.
+#### 思路：简单来说就是将数组排序，将使用过的数标记好，然后从未使用过的数中挑选进入备选中。可以用回溯法，详见solution1。我之前打算用交互数组元素的方法来标记已使用的元素，结果发现会导致重复结果。所以还是用一个数组作为标记的比较好。solution2利用了链表，更快速。
 #### 代码：
+#### solution 1
 ```
+public List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> res = new ArrayList<List<Integer>>();
+        if(nums==null || nums.length==0) return res;
+        boolean[] used = new boolean[nums.length];
+        List<Integer> list = new ArrayList<Integer>();
+        Arrays.sort(nums);
+        dfs(nums, used, list, res);
+        return res;
+    }
 
+    public void dfs(int[] nums, boolean[] used, List<Integer> list, List<List<Integer>> res){
+        if(list.size()==nums.length){
+            res.add(new ArrayList<Integer>(list));
+            return;
+        }
+        for(int i=0;i<nums.length;i++){
+            if(used[i]) continue;
+            if(i>0 &&nums[i-1]==nums[i] && !used[i-1]) continue;
+            used[i]=true;
+            list.add(nums[i]);
+            dfs(nums,used,list,res);
+            used[i]=false;
+            list.remove(list.size()-1);
+        }
+    }
+```
+#### solution2
+```
+class Node{
+        Node next = null;
+        int val;
+        Node(int val){
+            this.val = val;
+        }
+        void add(Node nd){
+            nd.next = next;
+            next = nd;
+        }
+        void remove(){
+            if (next != null){
+                next = next.next;
+            }
+        }
+    }
+
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        Arrays.sort(nums);
+	int n = nums.length;
+        Node head = new Node(0);
+        Node tmp = head;
+        for (int i = 0; i < n; i++){
+            tmp.add(new Node(nums[i]));
+            tmp = tmp.next;
+        }
+        List<List<Integer>> ans = new ArrayList<>();
+        dfs(head, new ArrayList<>(), ans);
+        return ans;
+    }
+    
+    void dfs(Node head, List<Integer> path, List<List<Integer>> ans){
+        if (head.next == null){
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        Node tmp = head;
+        while (tmp.next != null){
+            Node next = tmp.next;
+            if (tmp != head && tmp.val == next.val){
+                tmp = next;
+                continue;
+            }
+            tmp.remove();
+            path.add(next.val);
+            dfs(head, path, ans);
+            path.remove(path.size() - 1);
+            tmp.add(next);
+            tmp = next;
+        }
+    }
 ```
 ## 151 
 #### _medium_
