@@ -1051,21 +1051,62 @@ class Solution {
 	    array[i]=temp;
     }
 ```
-## 146 
+## 146 Combinations
 #### _medium_
-#### 描述：
-#### 思路：
+#### 描述：给定一个n和k，求1到n中有多少种长度为k的组合。
+#### 思路：回溯法做，我之前用迭代结果出错了。以为是先连续取k-1个数，再顺序去最后一个数，结果发现前k-1个可以不连续。。。真菜
 #### 代码：
 ```
-
+ public static List<List<Integer>> combine(int n, int k) {
+		List<List<Integer>> combs = new ArrayList<List<Integer>>();
+		combine(combs, new ArrayList<Integer>(), 1, n, k);
+		return combs;
+	}
+	public static void combine(List<List<Integer>> combs, List<Integer> comb, int start, int n, int k) {
+		if(k==0) {
+			combs.add(new ArrayList<Integer>(comb));
+			return;
+		}
+		for(int i=start;i<=n;i++) {
+			comb.add(i);
+			combine(combs, comb, i+1, n, k-1);
+			comb.remove(comb.size()-1);
+		}
+	}
 ```
-## 147 
+## 147 Gray Code
 #### _medium_
-#### 描述：
+#### 描述：给定一个n
 #### 思路：
 #### 代码：
+#### solution1:
 ```
-
+public List<Integer> grayCode(int n) {
+        List<Integer> result = new LinkedList<>();
+        for (int i = 0; i < 1<<n; i++) result.add(i ^ i>>1);
+        return result;
+    }
+```
+#### solution2:
+```
+int nums = 0;
+    public List<Integer> grayCode(int n) {
+        List<Integer> ret = new ArrayList<>();
+        backTrack(n, ret);
+        return ret;
+    }
+    
+    private void backTrack(int n, List<Integer> ret) {
+        if (n == 0) {
+            ret.add(nums);
+            return;
+        }
+        else {
+            backTrack(n - 1, ret);
+            nums ^= (1 << n - 1);
+            backTrack(n - 1, ret);
+        }
+    }
 ```
 ## 148 
 #### _medium_
