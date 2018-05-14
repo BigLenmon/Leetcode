@@ -1076,8 +1076,8 @@ class Solution {
 ```
 ## 147 Gray Code
 #### _medium_
-#### 描述：给定一个n
-#### 思路：
+#### 描述：给定一个n，返回一个list，其中的元素最高位为n，以0为起点，每个元素的二进制之和之前的元素的二进制只有一位的不同。该list包含所有的数（2^n个）。比如n=2，list等于00,01,11,10（0,1,3,2）或者等于00,10,11,01（0,2,3,1）。
+#### 思路：有两种算法，一个是迭代，第i位的元素为：i ^ i >> 2.另一个是回溯法，具体的看solution2，我现在也讲不清。之前我以为很简单就是从零开始，先从第零开始，每一位的数变成1，然后在从零开始每一位的数变成0.结果发现少了好多种变化。记住 << 优先级小于 -。还有一种方法就是这些list(n)，前一半和后一半的区别是，1）最高位是0和1，2）最高位之后的就是倒序
 #### 代码：
 #### solution1:
 ```
@@ -1108,7 +1108,35 @@ int nums = 0;
         }
     }
 ```
-## 148 
+## 148 Subsets II
+#### _medium_
+#### 描述：给定一个数组，返回这个数组的所有子数组
+#### 思路：回溯法的基本运用。
+#### 代码：
+```
+public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> temp = new ArrayList<>();
+        Arrays.sort(nums);
+        traceBack(temp,res,nums,0);
+        return res;
+    }
+    public  void traceBack(List<Integer> temp,List<List<Integer>> res,int[] nums,int start){
+        res.add(new ArrayList<>(temp));
+        int i = start;
+        while (i < nums.length){
+            
+            
+            temp.add(nums[i]);
+            traceBack(temp,res,nums,i+1);
+            temp.remove(temp.size()-1);
+            
+            i++;
+            while (i < nums.length  && nums[i] == nums[i-1]) i++;
+        }
+    }
+```
+## 149 Palindrome Partitioning
 #### _medium_
 #### 描述：
 #### 思路：
@@ -1116,15 +1144,7 @@ int nums = 0;
 ```
 
 ```
-## 149 
-#### _medium_
-#### 描述：
-#### 思路：
-#### 代码：
-```
-
-```
-## 150 
+## 150 Permutations II
 #### _medium_
 #### 描述：
 #### 思路：
