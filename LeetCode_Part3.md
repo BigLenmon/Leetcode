@@ -1263,13 +1263,42 @@ class Node{
         }
     }
 ```
-## 151 
-#### _medium_
-#### 描述：
-#### 思路：
+## 151 Min Stack
+#### _easy_
+#### 描述：求一个数据结构，和栈类似，但是能求栈中最小的值
+#### 思路：利用两个栈，一个栈存列表中依次最小的值。PS：值得注意的点是，要判断栈是否为空
 #### 代码：
 ```
+class MinStack {
 
+    /** initialize your data structure here. */
+    Stack<Integer> num;
+    Stack<Integer> min;
+    public MinStack() {
+        num = new Stack<Integer>();
+        min = new Stack<Integer>();
+    }
+    
+    public void push(int x) {
+        num.push(x);
+        if(min.isEmpty() || x <= min.peek())
+            min.push(x);
+    }
+    
+    public void pop() {
+        int out = num.pop();
+        if(!min.isEmpty() && out == min.peek())
+            min.pop();
+    }
+    
+    public int top() {
+        return num.peek();
+    }
+    
+    public int getMin() {
+        return min.peek();
+    }
+}
 ```
 ## 152 
 #### _medium_
